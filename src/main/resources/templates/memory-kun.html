@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+<HEAD>
+<meta charset="UTF-8" />
+<TITLE>暗記君</TITLE>
+<div style="background:gray" >
+    <img src="1.png" alt="暗記君" title="暗記君" width="1000px" />
+</div>
+
+<style type="text/css">
+h1 {
+    margin: 0;
+    margin-left: 300px;
+    font-size: 20pt;
+}
+h4 {
+    margin: 0;
+    margin-left: 600px;
+    font-size: 20pt;
+}
+h5 {
+    margin: 0;
+    margin-left: 900px;
+    font-size: 15pt;
+}
+h6 {
+    margin: 0;
+    margin-left: 1200px;
+    font-size: 20pt;
+}
+h7 {
+    marign: 0;
+    font-color: navy;
+}
+</style>
+
+<SCRIPT language="JavaScript">
+<!--
+// ツリーメニュー
+flag = false;
+function treeMenu(tName) {
+  tMenu = document.all[tName].style;
+  if(tMenu.display == 'none') tMenu.display = "block";
+  else tMenu.display == "none";
+}
+//--> 
+</SCRIPT>
+
+
+<script>
+function hyoji() {
+    document.getElementById("message").style.display="block";
+}
+
+function hihyoji() {
+    document.getElementById("message").style.display="none";
+}
+</script>
+
+
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<br /><br />
+<div style="background:#e6e6fa" >
+ <h1><a href="javaScript:treeMenu('treeMenu1')"><span th:text="${name1}">Node1-1</span></a><br /></h1> 
+<!-- <h1><a th:href="${path}">Node1-1</a><br /></h1> -->
+                        <form method="get" th:action="@{/h2}">
+                        <input type="text" name="name1" placeholder="名前" />
+                        <input type="submit" />
+                    </form>
+    <div id="treeMenu1" style="display:none; background:#7fffd4">
+       <h4><a href="javaScript:treeMenu('treeMenu2')">Node1-1</a></h4><br />
+       
+       <div id="treeMenu2" style="display:none">
+            <h5><a href="javaScript:treeMenu('treeMenu3')">●顧客<input type="checkbox" name="chk_box" /></a></h5>
+                <h6><div id="treeMenu3" style="display:none ;background:#ffb6c1; width:300px; text-align: center;">
+                    <span th:text="${name1111}">お金を払う人</span>
+                    <form method="get" th:action="@{/form}">
+                        <input type="text" name="name1111" placeholder="名前" />
+                        <input type="submit" />
+                    </form>
+                </div></h6>
+            <br /><h5> ●サービス<input type="checkbox" name="chk_box" /></h5><br />
+            <h5><a href="javaScript:treeMenu('treeMenu4')"><span th:text="${name111}">●ユーザー<input type="checkbox" name="chk_box" /></span></a></h5><br />
+            <form method="get" th:action="@{/form}">
+                <h5><input type="text" name="name111" placeholder="名前" /></h5>
+                <h5><input type="submit" /></h5>
+            </form>
+        </div>
+        <h4><a href="javaScript:treeMenu('treeMenu5')"><span th:text="${name11}">Node1-1</span></a></h4><br />
+              <h4>Node1-1</h4><br />
+        <form method="get" th:action="@{/form}">
+            <h4><input type="text" name="name11" placeholder="名前" /></h4>
+            <h4><input type="submit" /></h4>
+        </form><br />
+        
+        
+    </div>
+<br /><br /><br />
+
+</div>
+
+</BODY>
+</html>
+
+

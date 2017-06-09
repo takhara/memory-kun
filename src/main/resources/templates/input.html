@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+
+<HEAD>
+<meta charset="UTF-8" />
+<TITLE>暗記君</TITLE>
+
+<div style="background:#adff2f">
+    <img src="2.png" alt="暗記君" title="暗記君" width="1000px" />
+</div>
+
+<SCRIPT language="JavaScript">
+<!--
+     // ツリーメニュー
+    flag = false;
+    function treeMenu(tName) {
+    tMenu = document.all[tName].style;
+    if(tMenu.display == 'none') tMenu.display = "block";
+    else tMenu.display = "none";
+    }
+    //-->
+</SCRIPT>
+
+<a href="/memory-kun">トップに戻る</a>
+</HEAD>
+
+<body bgcolor="#ffffff">
+<h1><a href="javaScript:treeMenu('treeMenu1')">科目名の入力<br /><input type="text" name="text1" /></a></h1><br />
+    <div id="item2"></div>
+    <input type="button" value="項目を追加する" onClick="ItemField.add();" />
+    <input type="button" value="項目を削除する" onClick="ItemField.remove();" />
+    <form>
+    <script type="text/javascript" src="static/field.js"></script>
+    <script type="text/javascript">
+        ItemField.currentNumber = 1;
+        ItemField.itemTemplate = '<h4>追加項目__count__</h4>'+ '<p><input type="text" name="text__count__" size="30" /></p>';
+    </script>
+    </form>
+<div id="treeMenu1" style="display:none">
+    <h1><a href="javaScript:treeMenu('treeMenu2')">項目の入力<br /><input type="text" name="項目" /></a></h1><br />   
+    <div id="treeMenu2" style="display:none">
+        <h2><a href="javaScript:treeMenu('treeMenu3')">キーワード入力<br />
+        <input type="text" name="キーワード" /><br />キーワードの意味を入力<br />
+        <input type="text" name="意味" /></a></h2><br />
+    </div>
+       
+</div>
+</body>
+</html>

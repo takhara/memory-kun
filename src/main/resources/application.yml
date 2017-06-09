@@ -1,0 +1,11 @@
+app:
+  name: memory-kun
+  home: c:\${app.name}
+
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:C:\${app.name}\DB\${app.name}
+    username: sa
+    password: 
+    
