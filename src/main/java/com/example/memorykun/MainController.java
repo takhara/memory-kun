@@ -1,5 +1,7 @@
 package com.example.memorykun;
 
+import java.sql.ResultSet;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -36,11 +38,18 @@ public class MainController {
     @Autowired //springコンテナ
     private JdbcTemplate jdbc;
     @GetMapping("/h2")
+    
     public String h2(String name1,Model model){
         model.addAttribute("name1", name1);
+        jdbc.update("UPDATE subject set subname=? where subno=1",name1 );;
         return "memory-kun";
     }
-
+    @GetMapping("/h3")
+    public String h3(String name11,Model model){
+        model.addAttribute("name11",name11);
+    jdbc.update("UPDATE subject set sphname=? where supno=1 and subno=(select subno from subject where subname=name1)",name11);
+    return "memory-kun";
+    }
     //@Value("${app.name}")//注釈
     //private String appName;
     
