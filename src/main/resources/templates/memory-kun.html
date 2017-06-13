@@ -67,32 +67,30 @@ function treeMenu(tName) {
 <BODY bgcolor="#ffffff">
 <br /><br />
 <div style="background:#e6e6fa" >
+    <form method="get" th:action="@{/form}">
     <div th:each="subject : ${subjects}">
         <h1><a href="javaScript:treeMenu('treeMenu1')">
-        <input type="radio"  /><span th:text="${subject.name}"></span>
+        <input type="radio" name="radioGroup" th:value="${subject.id}" /><span th:text="${subject.name}"></span>
     </a></h1></div><br />
 
-    <form method="get" th:action="@{/form}">
-        <!-- <input value="check" />-->
+    
+        <!--   <input value="check" />-->
         <input type="text" name="subjectName" placeholder="名前" />
         <input type="submit" />
     </form>
     
     <div  id="treeMenu1" style="display:none; background:#7fffd4">
         
-        <h2><a href="javaScript:treeMenu('treeMenu2')">
-        <span th:text="${sphere.name}"></span>
-        
-        
-        <!-- <div th:each="sphere : ${spheres}">
+       
+         <div th:each="sphere : ${spheres}">
             <h2><a href="javaScript:treeMenu('treeMenu2')">
             <span th:text="${sphere.name}"></span>
         </a></h2></div><br />
         
         <form method="get" th:action="@{/form}">
             <h2><input type="text" name="sphereName" placeholder="名前" />
-            <!-- <input type="hidden" name="subjectName" th:value="subjectName" /> 
-            <input type="submit" /></h2> -->
+            <!-- <input type="hidden" name="subjectName" th:value="subjectName" /> -->
+            <input type="submit" /></h2> 
         </form>
         
         <div id="treeMenu2" style="display:none">
