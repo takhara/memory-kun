@@ -28,3 +28,14 @@ insert into sphere values(18,6,null,3);
 /*idをfor文で回してデータをupdate句で挿入、subjectにラジオボタンを持たせ、ラジオボタンが押されることでidを返すようにする。
  * 副問い合わせを用いて(select subno from subject where subname=('name'))subnoを挿入
  */
+insert into word values(1,1,null,null,1,1,);
+insert into word values(2,1,null,null,2,1,);
+insert into word values(3,1,null,null,3,1,);
+insert into word values(4,1,null,null,1,2,);
+insert into word values(5,1,null,null,1,3,);
+insert into word values(6,2,null,null,1,1,);
+insert into word values(7,3,null,null,1,1,);
+insert into word values(8,4,null,null,1,1,);
+insert into word values(9,5,null,null,1,1,);
+insert into word values(10,6,null,null,1,1,);
+insert into word values(11,7,null,null,1,1,);

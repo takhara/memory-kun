@@ -41,80 +41,69 @@ function treeMenu(tName) {
 }
 //--> 
 </SCRIPT>
-<script language="JavaScript">
-    function onRadioButtonChange() {
-      check1 = document.form1.Radio1.checked;
-      check2 = document.form1.Radio2.checked;
-      check3 = document.form1.Radio3.checked;
-
-      target = document.getElementById("output");
-
-      if (check1 == true) {
-          target.innerHTML = ;
-        }
-        else if (check2 == true) {
-          target.innerHTML = "2";
-        }
-        else if (check3 == true) {
-          target.innerHTML = "3";
-        }
-      }}
-    }
-</script>
-
 </HEAD>
 
 <BODY bgcolor="#ffffff">
 <br /><br />
-<div style="background:#e6e6fa" >
-    <form method="get" th:action="@{/form}">
-    <div th:each="subject : ${subjects}">
-        <h1><a href="javaScript:treeMenu('treeMenu1')">
-        <input type="radio" name="radioGroup" th:value="${subject.id}" /><span th:text="${subject.name}"></span>
-    </a></h1></div><br />
-
-    
-        <!--   <input value="check" />-->
-        <input type="text" name="subjectName" placeholder="名前" />
-        <input type="submit" />
+<div style="background:#e6e6fa; display: block">
+    <form method="post" th:action="@{/update/subject}">
+      <input type="text" name="subjectName" placeholder="名前" />
+      <input type="submit" />
     </form>
-    
-    <div  id="treeMenu1" style="display:none; background:#7fffd4">
-        
-       
-         <div th:each="sphere : ${spheres}">
-            <h2><a href="javaScript:treeMenu('treeMenu2')">
-            <span th:text="${sphere.name}"></span>
-        </a></h2></div><br />
-        
-        <form method="get" th:action="@{/form}">
-            <h2><input type="text" name="sphereName" placeholder="名前" />
-            <!-- <input type="hidden" name="subjectName" th:value="subjectName" /> -->
-            <input type="submit" /></h2> 
-        </form>
-        
-        <div id="treeMenu2" style="display:none">
-            <h3><a href="javaScript:treeMenu('treeMenu3')"><span th:text="${word}">word</span></a></h3>
-            <form method="get" th:action="@{/form}">
-                <h3><input type="text" name="word" placeholder="名前" />
-                <input type="hidden" name="subject" th:value="${subject}" />
-                <input type="hidden" name="sphere" th:value="${sphere}" />
-                <input type="submit" /></h3>
+
+    <div id="treeMenu1" style="display: block; background:#7fffd4">
+         <form method="post" th:action="@{/update/sphere}">
+           <div th:each="subject : ${subjects}">
+
+               <input type="radio" name="radioSubject" th:value="${subject.id}" />
+               <span th:text="${subject.name}"></span>
+
+           </div><br />
+            <input type="text" name="sphereName" placeholder="名前" />
+            <input type="submit" />
+         </form>
+
+         <div id="treeMenu2" style="display: block">
+
+            <form method="post" th:action="@{/update/word}">
+
+              <div th:each="sphere : ${spheres}">
+                 <a href="javaScript:treeMenu('treeMenu2')"> 
+
+                    <input type="radio" name="radioSphere" th:value="${sphere.number}" />
+                    <span th:text="${sphere.name}"></span>
+
+               </a> 
+              </div><br />
+              <input type="text" name="wordName" placeholder="名前" />
+              <input type="submit" />
             </form>
-            <div class="blockd" id="treeMenu3" style="display:none ; text-align: center;">
-                <h4><a href="javaScript:treeMenu('treeMenu3')"><span th:text="${mean}">mean</span></a></h4>
-                <form method="get" th:action="@{/form}">
-                    <h4><input type="text" name="mean" placeholder="名前" />
-                    <input type="hidden" name="subject" th:value="${subject}" />
-                    <input type="hidden" name="sphere" th:value="${sphere}" />
-	                <input type="hidden" name="word" th:value="${word}" />
-		            <input type="submit" /></h4>
-	            </form>
-	        </div>
-        </div>
-    </div>
+            
+          <div id ="treeMenu3" style="display: block">
+            <form method="post" th:action="@{/update/mean}">
+              <div th:each="word : ${words}">
+                <a href="javaScript:treeMenu('treeMenu3')"> 
+                    <input type="radio" name="radioWord" th:value="${word.number}" />
+                    <span th:text="${word.name}"></span>
+                </a> 
+                    <input type="text" name="mean" placeholder="名前" />
+                    <input type="submit" />
+                    <a href="javaScript:treeMenu('treeMenu4')"> 
+                    <span th:text="${word.mean}"></span> </a>
+
+
+
+             </div>
+
+
+              </form>
+              
+                
+              </div>
+          </div>
+     </div>
 </div>
+
 
 </BODY>
 </html>
-
