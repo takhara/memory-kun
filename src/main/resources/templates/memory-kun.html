@@ -1,37 +1,14 @@
-<!DOCTYPE html>
+
 <html lang="ja-jp">
 <HEAD>
 <meta charset="UTF-8" />
 <TITLE>暗記君</TITLE>
 <div style="background:gray" >
-    <img src="1.png" alt="暗記君" title="暗記君" width="1000px" />
+    <img src="1.png" alt="暗記君" title="暗記君"/>
 </div>
-<style type="text/css">
-h1 {
-    margin: 0;
-    margin-left: 300px;
-    font-size: 20pt;
-}
-h2 {
-    margin: 0;
-    margin-left: 600px;
-    font-size: 20pt;
-}
-h3 {
-    margin: 0;
-    margin-left: 900px;
-    font-size: 15pt;
-}
-h4 {
-    margin: 0;
-    margin-left: 1200px;
-    font-size: 20pt;
-}
-
-</style>
-
-<SCRIPT language="JavaScript">
 <!--
+<SCRIPT language="JavaScript">
+
 // ツリーメニュー
 flag = false;
 function treeMenu(tName) {
@@ -39,71 +16,87 @@ function treeMenu(tName) {
   if(tMenu.display == 'none') tMenu.display = "block";
   else tMenu.display == "none";
 }
-//--> 
+
 </SCRIPT>
+//--> 
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"></link>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
 </HEAD>
 
-<BODY bgcolor="#ffffff">
+<BODY bgcolor="white">
 <br /><br />
-<div style="background:#e6e6fa; display: block">
+<div class="container-fluid" style="background:white; display: block">
+    <div class="row">
+
+    <div class="col-sm-2">
     <form method="post" th:action="@{/update/subject}">
-      <input type="text" name="subjectName" placeholder="名前" />
+      <input type="text" name="subjectName" placeholder="科目を入力" />
       <input type="submit" />
     </form>
+    </div>
 
-    <div id="treeMenu1" style="display: block; background:#7fffd4">
-         <form method="post" th:action="@{/update/sphere}">
+
+    <div class="col-sm-2" id="treeMenu1" style="display: block; background:white">
+      <form method="post" th:action="@{/update/sphere}">
            <div th:each="subject : ${subjects}">
+              <input type="radio" name="radioSubject" th:value="${subject.id}" />
+              <span th:text="${subject.name}"></span>
+           </div>
+           <input type="text" name="sphereName" placeholder="範囲を入力"/>
+           <input type="submit" />
+        </form>
+        </div>
+     
 
-               <input type="radio" name="radioSubject" th:value="${subject.id}" />
-               <span th:text="${subject.name}"></span>
 
-           </div><br />
-            <input type="text" name="sphereName" placeholder="名前" />
-            <input type="submit" />
-         </form>
-
-         <div id="treeMenu2" style="display: block">
-
+        <div class="col-sm-2" id="treeMenu2" style="display: block">
             <form method="post" th:action="@{/update/word}">
-
-              <div th:each="sphere : ${spheres}">
-                 <a href="javaScript:treeMenu('treeMenu2')"> 
-
+                <div th:each="sphere : ${spheres}">
                     <input type="radio" name="radioSphere" th:value="${sphere.number}" />
+                    <input type="hidden" name="radioSubject" th:value="${radioSubject}" />
                     <span th:text="${sphere.name}"></span>
-
-               </a> 
-              </div><br />
-              <input type="text" name="wordName" placeholder="名前" />
-              <input type="submit" />
+                </div>
+                <input type="text" name="wordName" placeholder="単語を入力" />
+                <input type="submit" />
             </form>
-            
-          <div id ="treeMenu3" style="display: block">
-            <form method="post" th:action="@{/update/mean}">
-              <div th:each="word : ${words}">
-                <a href="javaScript:treeMenu('treeMenu3')"> 
-                    <input type="radio" name="radioWord" th:value="${word.number}" />
-                    <span th:text="${word.name}"></span>
-                </a> 
-                    <input type="text" name="mean" placeholder="名前" />
+            </div>
+            <div class="col-sm-2" id ="treeMenu3" style="display: block">
+                <form method="post" th:action="@{/update/mean}">
+                    <div th:each="word : ${words}"> 
+                        <input type="radio" name="radioWord" th:value="${word.name}" />
+                        <span th:text="${word.name}"></span>
+                        <input type="hidden" name="radioSubject" th:value="${radioSubject}" />
+                        <input type="hidden" name="radioSphere" th:value="${radioSphere}" />
+                    </div>
+                    <input type="text" name="mean" placeholder="意味を入力" />
                     <input type="submit" />
-                    <a href="javaScript:treeMenu('treeMenu4')"> 
-                    <span th:text="${word.mean}"></span> </a>
+                </form>
+                </div>
+                <div class="col-sm-4" id ="treeMenu4" style="display: block">
+                    <div th:each="word : ${words}">
+                        <form method="post" th:action="@{/update/mean}">
+                          <span th:text="${word.mean}"></span>
+                        </form>
+                    </div>
 
-
-
-             </div>
-
-
-              </form>
-              
-                
-              </div>
-          </div>
-     </div>
+                </div>
+                </div>
+               
 </div>
 
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    
+    
 
 </BODY>
 </html>
