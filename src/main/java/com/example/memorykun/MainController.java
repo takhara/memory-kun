@@ -11,13 +11,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
+
 @Controller // クラス
 public class MainController {
 
     @GetMapping("/memory-kun")
     public String hello(Model model) {
-        // model.addAttribute("subject", jdbc.queryForList("SELECT * FROM
-        // subject WHERE id = 1").get(0));
+        model.addAttribute("subjects", jdbc.queryForList("SELECT * FROM subject WHERE name IS NOT null"));
 
         return "memory-kun";
     }
@@ -35,12 +36,14 @@ public class MainController {
     @Autowired
     private JdbcTemplate jdbc;
 
-    Integer subjectNumber;
-    Integer sphereNumber;
     int count = 1;
 
+
     @PostMapping("/update/subject") /* HTML 14 (th:action="@{/form})、メソッド */
-    public String updateSubject(String subjectName, Integer radioSubject, RedirectAttributes attr) {
+    // public String updateSubject(String subjectName, Integer radioSubject,
+    // RedirectAttributes attr) {
+    public String updateSubject(UpdateSubjectForm form, RedirectAttributes attr) {
+
         // どこまでデータが入っているかを確かめる,get(0)は一つのデータを持ってくるという意味、
         int size = 0;
         for (int i = 1; i <= 3; i++) {
@@ -51,7 +54,7 @@ public class MainController {
         }
 
         // 2.DBを更新する
-        jdbc.update("UPDATE subject set name=? where id=? And name IS NULL", subjectName, size + 1);
+        jdbc.update("UPDATE subject set name=? where id=? And name IS NULL", form.getSubjectName(), size + 1);
 
         // 3.DBから値を読み込む
         List<Map<String, Object>> subjects = jdbc.queryForList("SELECT * FROM subject WHERE name IS NOT null");
@@ -62,57 +65,91 @@ public class MainController {
         // 4.値を返してあげる、リストで返している
         attr.addFlashAttribute("subjects", subjects);
 
-        // Integer.parseInt(radioGroup);
         return "redirect:/memory-kun";
     }
+    
+    @PostMapping("/to/sphere")
+    public String toSphere(int subjectNumber, RedirectAttributes attr) {
+        Map<String, Object> currentSubject = jdbc.queryForList("SELECT * FROM subject WHERE id = ?", subjectNumber)
+                .get(0);
+        List<Map<String, Object>> spheres = jdbc
+                .queryForList("SELECT * FROM sphere WHERE name IS NOT null AND subject_number = ?", subjectNumber);
 
+        attr.addFlashAttribute("currentSubject", currentSubject);
+        attr.addFlashAttribute("spheres", spheres);
+        attr.addFlashAttribute("subjectNumber", subjectNumber);
+
+        return "redirect:/memory-kun";
+    }
+    
     @PostMapping("/update/sphere") /* HTML 14 (th:action="@{/form})、メソッド */
-    public String updateSphere(Integer radioSubject, String sphereName, RedirectAttributes attr) {
-        System.out.println(radioSubject);
+    public String updateSphere(String sphereName, RedirectAttributes attr, int subjectNumber) {
+        System.out.println(subjectNumber);
         int size = 0;
         for (int i = 1; i <= 6; i++) {
-            if (jdbc.queryForList("SELECT * FROM sphere WHERE number=? AND subject_number=?", i, radioSubject).get(0)
+            if (jdbc.queryForList("SELECT * FROM sphere WHERE number=? AND subject_number=?", i, subjectNumber).get(0)
                     .get("name") == null) {
                 size = i - 1;
                 break;
             }
         }
+        
         jdbc.update("UPDATE sphere set name=? where number=? AND name IS NULL AND subject_number=?", sphereName,
-                size + 1, radioSubject);
+                size + 1, subjectNumber);
 
         List<Map<String, Object>> spheres = jdbc
-                .queryForList("SELECT * FROM sphere WHERE name IS NOT NULL AND subject_number= ?", radioSubject);
+                .queryForList("SELECT * FROM sphere WHERE name IS NOT NULL AND subject_number= ?", subjectNumber);
 
-        attr.addFlashAttribute("radioSubject", radioSubject);
+        attr.addFlashAttribute("subjectNumber", subjectNumber);
         attr.addFlashAttribute("subjects", jdbc.queryForList("SELECT * FROM subject where name IS NOT NULL"));
         attr.addFlashAttribute("spheres", spheres);
 
-        subjectNumber = radioSubject;
         return "redirect:/memory-kun";
     }
+    //[SELECT * FROM words WHERE name IS NOT null AND subject_id=? AND sphere_number=?]
+    @PostMapping("/to/word")
+    public String toWord(int subjectNumber, RedirectAttributes attr, int sphereNumber) {
+  System.out.println(subjectNumber);
+  System.out.println(sphereNumber);
+        Map<String, Object> currentSubject = jdbc.queryForList("SELECT * FROM subject WHERE id = ?", subjectNumber)
+                .get(0);
+        Map<String, Object> currentSphere = jdbc.queryForList("SELECT * FROM sphere WHERE subject_number=? AND number=?",subjectNumber,sphereNumber)
+                .get(0);
 
+        List<Map<String, Object>> spheres = jdbc
+                .queryForList("SELECT * FROM sphere WHERE name IS NOT NULL AND subject_number=?", subjectNumber);
+
+        List<Map<String, Object>> words = jdbc
+                .queryForList("SELECT * FROM word WHERE name IS NOT NULL AND subject_number=? AND sphere_number=?", subjectNumber,sphereNumber);
+        attr.addFlashAttribute("currentShpere", currentSphere);
+        attr.addFlashAttribute("currentSubject", currentSubject);
+        attr.addFlashAttribute("spheres", spheres);
+        attr.addFlashAttribute("subjectNumber", subjectNumber);
+        attr.addFlashAttribute("words", words);
+
+        return "redirect:/memory-kun";
+    }
+    
     @PostMapping("/update/word")
-    public String updateWord(Integer radioSphere, RedirectAttributes attr, String wordName, Integer radioSubject) {
-            try{
+    public String updateWord(int sphereNumber, RedirectAttributes attr, String wordName, int subjectNumber) {
+        try {
             for (int i = 1; i <= 100; i++) {
-                jdbc.update("INSERT INTO word VALUES(?,?,?,?,?)", count, wordName, null, radioSubject, radioSphere);
+                jdbc.update("INSERT INTO word VALUES(?,?,?,?,?)", count, wordName, null, subjectNumber, sphereNumber);
                 count = +1;
                 break;
             }
-            }catch(RuntimeException e){
-                System.out.println("同じ単語名が使用されています。");
-            }
+        } catch (RuntimeException e) {
+            System.out.println("同じ単語名が使用されています。");
+        }
         List<Map<String, Object>> words = jdbc.queryForList(
-                "SELECT * FROM word WHERE name IS NOT NULL AND subject_number= ? AND  sphere_number=?", radioSubject,
-                radioSphere);
+                "SELECT * FROM word WHERE subject_number=? AND sphere_number=?", subjectNumber, sphereNumber);
         attr.addFlashAttribute("words", words);
-        attr.addFlashAttribute("radioSubject", radioSubject);
-        attr.addFlashAttribute("radioSphere", radioSphere);
+        attr.addFlashAttribute("subjectNumber", subjectNumber);
+        attr.addFlashAttribute("sphereNumber", sphereNumber);
         attr.addFlashAttribute("subjects", jdbc.queryForList("SELECT * FROM subject where name IS NOT NULL"));
         attr.addFlashAttribute("spheres",
-                jdbc.queryForList("SELECT * FROM sphere where number=? AND name IS NOT NULL AND subject_number=?",
-                        radioSphere, subjectNumber));
-        sphereNumber = radioSphere;
+                jdbc.queryForList("SELECT * FROM sphere where name IS NOT NULL AND subject_number=?",
+                         subjectNumber));
         return "redirect:/memory-kun";
     }
 
@@ -121,26 +158,66 @@ public class MainController {
             Integer radioSphere, Integer radioSubject) {
         jdbc.update("UPDATE word set mean=? where name=? AND subject_number=? AND sphere_number=?", mean, radioWord,
                 radioSubject, radioSphere);
-        
 
         List<Map<String, Object>> words = jdbc.queryForList(
-                "SELECT * FROM word WHERE name IS NOT NULL AND subject_number= ? AND  sphere_number=? AND name=?",
-                radioSubject, radioSphere, radioWord);
-       
+                "SELECT * FROM word WHERE name=? AND subject_number= ? AND  sphere_number=?", radioWord, radioSubject,
+                radioSphere);
+        attr.addFlashAttribute("words", words);
+        attr.addFlashAttribute("radioSubject", radioSubject);
+        attr.addFlashAttribute("radioSphere", radioSphere);
         attr.addFlashAttribute("subjects", jdbc.queryForList("SELECT * FROM subject where name IS NOT NULL"));
         attr.addFlashAttribute("spheres",
                 jdbc.queryForList("SELECT * FROM sphere where number=? AND name IS NOT NULL AND subject_number=?",
                         radioSphere, radioSubject));
-        attr.addFlashAttribute("radioSubject", radioSubject);
-        attr.addFlashAttribute("radioSphere", radioSphere);
-        attr.addFlashAttribute("words", jdbc.queryForList("SELECT name FROM word WHERE subject_number=? AND sphere_number=?",
-                 radioSubject, radioSphere));
-        attr.addFlashAttribute("mean",
-                jdbc.queryForList("SELECT mean FROM word WHERE name=? AND subject_number=? AND sphere_number=?",
-                        wordName, radioSubject, radioSphere));
         return "redirect:/memory-kun";
     }
+    //こここここここここ
+    @PostMapping("/to/mean")
+    public String toMean(int subjectNumber, RedirectAttributes attr, int sphereNumber, String wordName) {
+        Map<String, Object> currentSubject = jdbc.queryForList("SELECT * FROM subject WHERE id = ?", subjectNumber)
+                .get(0);
+        Map<String, Object> currentSphere = jdbc.queryForList("SELECT * FROM sphere WHERE subject_number=? AND number=?",subjectNumber,sphereNumber)
+                .get(0);
+        Map<String, Object> currentWord = jdbc.queryForList("SELECT * FROM word WHERE subject_number=? AND number=? AND name=?",subjectNumber,sphereNumber,wordName)
+                .get(0);
 
-    // @Value("${app.name}")//注釈
-    // private String appName;
+        List<Map<String, Object>> spheres = jdbc
+                .queryForList("SELECT * FROM sphere WHERE name IS NOT NULL AND subject_number=?", subjectNumber);
+System.out.println(subjectNumber);
+System.out.println(sphereNumber);
+        List<Map<String, Object>> words = jdbc
+                .queryForList("SELECT * FROM word WHERE name IS NOT NULL AND subject_number=? AND sphere_number=?", subjectNumber,sphereNumber);
+        Map<String, Object> mean = jdbc
+                .queryForList("SELECT * FROM word WHERE name IS NOT NULL AND subject_number=? AND sphere_number=? AND name=?", subjectNumber,sphereNumber,wordName).get(0);
+        
+        attr.addFlashAttribute("currentShpere", currentSphere);
+        attr.addFlashAttribute("currentSubject", currentSubject);
+        attr.addFlashAttribute("currentWord", currentWord);
+        attr.addFlashAttribute("subjectNumber", subjectNumber);
+        attr.addFlashAttribute("sphereNumber", sphereNumber);
+        attr.addFlashAttribute("wordName", wordName);
+        attr.addFlashAttribute("spheres", spheres);
+        attr.addFlashAttribute("words", words);
+        attr.addFlashAttribute("mean", mean);
+
+        
+        return "redirect:/memory-kun";
+    }
+    
+    @PostMapping("/display/sphere")
+    public String displaySphere(Integer subjectNumber, Integer selectSphere, RedirectAttributes attr) {
+        /*
+         * List<Map<String, Object>> spheres = jdbc.queryForList(
+         * "SELECT * FROM sphere WHERE name IS NOT NULL AND subject_number= ?",
+         * subjectNumber); attr.addFlashAttribute("spheres", spheres);
+         */
+        System.out.println(subjectNumber);
+        System.out.println(
+                jdbc.queryForList("SELECT * FROM sphere where name IS NOT NULL AND subject_number=?", subjectNumber));
+        attr.addFlashAttribute("spheres",
+                jdbc.queryForList("SELECT * FROM sphere where name IS NOT NULL AND subject_number=?", subjectNumber));
+        return "redirect:/memory-kun";
+
+    }
+
 }
