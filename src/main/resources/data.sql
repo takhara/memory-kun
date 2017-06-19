@@ -1,8 +1,9 @@
 
-insert into subject values(1,null);
-insert into subject values(2,null);
-insert into subject values(3,null);
-
+insert into subject values(1,1,null);
+insert into subject values(2,2,null);
+insert into subject values(3,3,null);
+insert into subject values(4,4,null);
+insert into subject values(5,5,null);
 --idをfor文で回してデータをupdate句で挿入
 
 insert into sphere values(1,1,null,1);
@@ -11,20 +12,34 @@ insert into sphere values(3,3,null,1);
 insert into sphere values(4,4,null,1);
 insert into sphere values(5,5,null,1);
 insert into sphere values(6,6,null,1);
+insert into sphere values(7,7,null,1);
+insert into sphere values(8,8,null,1);
+insert into sphere values(9,9,null,1);
+insert into sphere values(10,10,null,1);
 
-insert into sphere values(7,1,null,2);
-insert into sphere values(8,2,null,2);
-insert into sphere values(9,3,null,2);
-insert into sphere values(10,4,null,2);
-insert into sphere values(11,5,null,2);
-insert into sphere values(12,6,null,2);
+insert into sphere values(11,1,null,2);
+insert into sphere values(12,2,null,2);
+insert into sphere values(13,3,null,2);
+insert into sphere values(14,4,null,2);
+insert into sphere values(15,5,null,2);
+insert into sphere values(16,6,null,2);
+insert into sphere values(17,7,null,2);
+insert into sphere values(18,8,null,2);
+insert into sphere values(19,9,null,2);
+insert into sphere values(20,10,null,2);
 
-insert into sphere values(13,1,null,3);
-insert into sphere values(14,2,null,3);
-insert into sphere values(15,3,null,3);
-insert into sphere values(16,4,null,3);
-insert into sphere values(17,5,null,3);
-insert into sphere values(18,6,null,3);
+insert into sphere values(21,1,null,3);
+insert into sphere values(22,2,null,3);
+insert into sphere values(23,3,null,3);
+insert into sphere values(24,4,null,3);
+insert into sphere values(25,5,null,3);
+insert into sphere values(26,6,null,3);
+insert into sphere values(27,7,null,3);
+insert into sphere values(28,8,null,3);
+insert into sphere values(29,9,null,3);
+insert into sphere values(30,10,null,3);
+
+
 /*idをfor文で回してデータをupdate句で挿入、subjectにラジオボタンを持たせ、ラジオボタンが押されることでidを返すようにする。
  * 副問い合わせを用いて(select subno from subject where subname=('name'))subnoを挿入
  */

@@ -3,23 +3,30 @@
 <HEAD>
 <meta charset="UTF-8" />
 <TITLE>暗記君</TITLE>
-<!-- 
-<div style="background:gray" >
-    <img src="1.png" alt="暗記君" title="暗記君"/>
-</div> -->
-<!--
-<SCRIPT language="JavaScript">
 
-// ツリーメニュー
-flag = false;
-function treeMenu(tName) {
-  tMenu = document.all[tName].style;
-  if(tMenu.display == 'none') tMenu.display = "block";
-  else tMenu.display == "none";
+<div style="background:#d3d3d3" align="center">
+    <img src="iii.png" alt="暗記君" title="暗記君"/>
+</div>
+<style type="text/css">
+
+h1 {
+    margin-left: auto;
+}
+div.toWord {
+overflow-y:scroll;
+height: 300px;
 }
 
-</SCRIPT>
-//--> 
+div.toMean {
+overflow-y:scroll;
+height: 300px;
+}
+div.displayMean {
+overflow-y:scroll;
+height: 300px;
+}
+</style>
+
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"></link>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -31,14 +38,14 @@ function treeMenu(tName) {
 
 </HEAD>
 
-<BODY bgcolor="white">
+<BODY bgcolor="honeydew">
 <br /><br />
 <div class="container-fluid" style="background:white; display: block">
-
-  <table>
+<div class="table-responsive">
+  <table class="table table-striped">
     <tr>
       <th>
-        <div>
+        <div align="center">
           <form method="post" th:action="@{/update/subject}">
             <input type="text" name="subjectName" placeholder="科目を入力" />
             <input type="submit" />
@@ -46,7 +53,7 @@ function treeMenu(tName) {
         </div>
       </th>
       <th>
-        <div>
+        <div align="center">
           <form method="post" th:action="@{/update/sphere}">
             <input type="text" name="sphereName" placeholder="範囲を入力"/>
             <input type="submit" />
@@ -55,7 +62,7 @@ function treeMenu(tName) {
         </div>
       </th>
       <th>
-        <div>
+        <div align="center">
           <form method="post" th:action="@{/update/word}">
             <input type="text" name="wordName" placeholder="単語を入力" />
             <input type="submit" />
@@ -65,7 +72,7 @@ function treeMenu(tName) {
         </div>
       </th>
       <th>
-        <div>
+        <div align="center">
           <form method="post" th:action="@{/update/mean}">
             <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
             <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
@@ -78,75 +85,91 @@ function treeMenu(tName) {
     </tr>
     <tr>
         <th>
-            title
+          <div align="center">
+            <h3>title</h3>
+          </div>
         </th>
         <th>
+          <div align="center">
             <form method="post" th:action="@{/current/subject}">
-            <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
-            <span th:text="${currentSubject}"></span>
+              <h3>
+              <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
+              <span th:text="${currentSubject}"></span>
+              </h3>
             </form>
+          </div>
         </th>
         <th>
+          <div align="center">
             <form method="post" th:action="@{/current/sphere}">
-            <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
-            <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
-                        <span th:text="${currentSphere}"></span>
+              <h3>
+              <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
+              <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
+              <span th:text="${currentSphere}"></span>
+              </h3>
             </form>
+          </div>
         </th>
         <th>
+          <div align="center">
             <form method="post" th:action="@{/current/word}">
-            <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
-            <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
-            <input type="hidden" name="selectWord" th:value="${selectWord}" />
-            <span th:text="${currentWord}"></span>
+              <h3>
+              <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
+              <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
+              <input type="hidden" name="selectWord" th:value="${selectWord}" />
+              <span th:text="${currentWord}"></span>
+              </h3>
             </form>
+          </div>
         </th>
     </tr>
     <tr>
       <th>
-        <form method="post" th:action="@{/to/sphere}">
-            <div th:each="subject : ${subjects}">
+        <div align="center">
+          <form method="post" th:action="@{/to/sphere}">
+              <div th:each="subject : ${subjects}">
                 <span th:text="${subject.name}"></span>
-                <button type="submit" name="subjectNumber" th:value="${subject.id}" >⇒</button>
-            </div>
-        </form>
+                <h1><button type="submit" class="btn btn-primary btn-xs" name="subjectNumber" th:value="${subject.number}" >next</button></h1>
+              </div>
+          </form>
+        </div>
       </th>
       <th>
-        <form method="post" th:action="@{/to/word}">
+        <div class="toWord" align="center">
+          <form method="post" th:action="@{/to/word}">
             <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
             <div th:each="sphere : ${spheres}">
-            <span th:text="${sphere.name}"></span>
-            <button type="submit" name="sphereNumber" th:value="${sphere.number}" >⇒</button>
-          </div>
-        </form>
+              <span th:text="${sphere.name}"></span>
+              <h1><button type="submit" class="btn btn-primary btn-xs" name="sphereNumber" th:value="${sphere.number}" >next</button></h1>
+            </div>
+          </form>
+        </div>
       </th>
       <th>
-        <form method="post" th:action="@{/to/mean}">
-        <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
-        <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
-          <div th:each="word : ${words}"> 
-            <span th:text="${word.name}"></span>
-            <button type="submit" name="selectWord" th:value="${word.name}" >⇒</button>
-          </div> 
-        </form>
+        <div class="toMean" align="center" >
+          <form method="post" th:action="@{/to/mean}">
+            <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
+            <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
+            <div th:each="word : ${words}"> 
+              <span th:text="${word.name}"></span>
+              <h1><button type="submit" class="btn btn-primary btn-xs" name="selectWord" th:value="${word.name}" >next</button></h1>
+            </div> 
+          </form>
+        </div>
       </th>
       <th>
-        <form method="post" th:action="@{/display/mean}">
-        <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
-        <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
-        <input type="hidden" name="selectWord" th:value="${selectWord}" /> 
-        
-        <span th:text="${mean}"></span>
-        </form>
+        <div class="displayMean" align="center">
+          <form method="post" th:action="@{/display/mean}">
+            <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
+            <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
+            <input type="hidden" name="selectWord" th:value="${selectWord}" />  
+            <span th:text="${mean}"></span>
+          </form>
+        </div>
       </th>
     </tr>
   </table>
-
-
-          
-
-     
-
+</div>
 </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
