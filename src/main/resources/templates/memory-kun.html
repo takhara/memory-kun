@@ -67,13 +67,41 @@ function treeMenu(tName) {
       <th>
         <div>
           <form method="post" th:action="@{/update/mean}">
+            <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
+            <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
+            <input type="hidden" name="selectWord" th:value="${selectWord}" />
             <input type="text" name="mean" placeholder="意味を入力" />
             <input type="submit" />
           </form>
         </div>
       </th>
     </tr>
-    
+    <tr>
+        <th>
+            title
+        </th>
+        <th>
+            <form method="post" th:action="@{/current/subject}">
+            <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
+            <span th:text="${currentSubject}"></span>
+            </form>
+        </th>
+        <th>
+            <form method="post" th:action="@{/current/sphere}">
+            <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
+            <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
+                        <span th:text="${currentSphere}"></span>
+            </form>
+        </th>
+        <th>
+            <form method="post" th:action="@{/current/word}">
+            <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
+            <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
+            <input type="hidden" name="selectWord" th:value="${selectWord}" />
+            <span th:text="${currentWord}"></span>
+            </form>
+        </th>
+    </tr>
     <tr>
       <th>
         <form method="post" th:action="@{/to/sphere}">
@@ -98,14 +126,16 @@ function treeMenu(tName) {
         <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
           <div th:each="word : ${words}"> 
             <span th:text="${word.name}"></span>
-            <button type="submit" name="wordName" th:value="${word.name}" >⇒</button>
+            <button type="submit" name="selectWord" th:value="${word.name}" >⇒</button>
           </div> 
         </form>
       </th>
       <th>
-        <form method="post" th:action="@{/to/mean}">
+        <form method="post" th:action="@{/display/mean}">
         <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
         <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
+        <input type="hidden" name="selectWord" th:value="${selectWord}" /> 
+        
         <span th:text="${mean}"></span>
         </form>
       </th>
