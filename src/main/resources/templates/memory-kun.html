@@ -12,25 +12,25 @@
 h1 {
     margin-left: auto;
 }
-div.toSphere {
+#toSphere {
 overflow-y:scroll;
 height: 300px;
 
 
 }
-div.toWord {
+#toWord {
 overflow-y:scroll;
 height: 300px;
 
 }
 
-div.toMean {
+#toMean {
 overflow-y:scroll;
 height: 300px;
 
 }
-div.displayMean {
-word-break: break-all;
+#displayMean {
+
 height: 300px;
 }
 </style>
@@ -48,21 +48,24 @@ height: 300px;
 </HEAD>
 
 <BODY bgcolor="honeydew">
+
 <br /><br />
 <div class="container-fluid" style="background:white; display: block">
 <div class="table-responsive">
+<div class="row">
   <table class="table table-striped">
     <tr>
-      <th>
-        <div align="center">
+      <th class="col-lg-3">
+        <div  align="center">
           <form method="post" th:action="@{/update/subject}" class="form-inline">
             <input type="text" name="subjectName" placeholder="科目を入力"  required="required" maxlength="20" class="form-control" />
             <input type="submit"  class="btn btn-success" />
           </form>
         </div>
       </th>
-      <th>
-        <div align="center">
+
+      <th class="col-lg-3"> 
+        <div  align="center">
           <form method="post" th:action="@{/update/sphere}" class="form-inline">
             <input th:if="${currentSubject} != null" type="text" name="sphereName" placeholder="範囲を入力" required="required" maxlength="20" class="form-control" />
             <input th:if="${currentSubject} == null" type="text" name="sphereName" placeholder="範囲を入力" required="required" maxlength="20" class="form-control" disabled="disabled" />
@@ -72,7 +75,7 @@ height: 300px;
           </form>
         </div>
       </th>
-      <th>
+      <th class="col-lg-3"> 
         <div align="center">
           <form method="post" th:action="@{/update/word}" class="form-inline">
             <input th:if="${currentSphere} != null" type="text" name="wordName" placeholder="単語を入力" required="required" maxlength="30" class="form-control" />
@@ -84,8 +87,8 @@ height: 300px;
           </form>
         </div>
       </th>
-      <th>
-        <div align="center">
+      <th class="col-lg-3">
+        <div  align="center">
           <form method="post" th:action="@{/update/mean}" class="form-inline">
             <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
             <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
@@ -99,13 +102,13 @@ height: 300px;
       </th>
     </tr>
     <tr>
-        <th>
+        <th class="col-lg-3">
           <div align="center">
             <h3>title</h3>
           </div>
         </th>
-        <th>
-          <div align="center">
+        <th class="col-lg-3">
+          <div  align="center">
             <form method="post" th:action="@{/current/subject}">
               <h3>
               <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
@@ -114,7 +117,7 @@ height: 300px;
             </form>
           </div>
         </th>
-        <th>
+        <th class="col-lg-3">
           <div align="center">
             <form method="post" th:action="@{/current/sphere}">
               <h3>
@@ -124,8 +127,8 @@ height: 300px;
               </h3>
             </form>
           </div>
-        </th>
-        <th>
+        </th >
+        <th class="col-lg-3">
           <div align="center">
             <form method="post" th:action="@{/current/word}">
               <h3>
@@ -139,51 +142,67 @@ height: 300px;
         </th>
     </tr>
     <tr>
-      <th>
-        <div class="toSphere" align="center">
+      <th class="col-lg-3">
+
+        <div  id="toSphere" align="center">
           <form method="post" th:action="@{/to/sphere}" class="form-inline" >
               <div th:each="subject : ${subjects}">
+              <h1>
                 <span th:text="${subject.name}"></span>
-                <h1><button type="submit" class="btn btn-primary btn-xs" name="subjectNumber" th:value="${subject.number}" >next</button></h1>
+               <button type="submit" class="btn btn-primary btn-xs" name="subjectNumber" th:value="${subject.number}" >next</button>
+              </h1>
               </div>
           </form>
         </div>
+
       </th>
-      <th>
-        <div class="toWord" align="center">
+      <th class="col-lg-3">
+
+        <div id="toWord" align="center">
           <form method="post" th:action="@{/to/word}" class="form-inline">
             <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
             <div th:each="sphere : ${spheres}">
+            <h2>
               <span th:text="${sphere.name}"></span>
-              <h1><button type="submit" class="btn btn-primary btn-xs" name="sphereNumber" th:value="${sphere.number}" >next</button></h1>
+              <button type="submit" class="btn btn-primary btn-xs" name="sphereNumber" th:value="${sphere.number}" >next</button>
+              </h2>
             </div>
           </form>
         </div>
+ 
       </th>
-      <th>
-        <div class="toMean" align="center" >
+      <th class="col-lg-3">
+        <div id="toMean" align="center" >
           <form method="post" th:action="@{/to/mean}" class="form-inline">
             <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
             <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
             <div th:each="word : ${words}"> 
+            <h2>
+              <input type="checkbox" name="checkbox" th:value="${word.checked}" />
               <span th:text="${word.name}"></span>
-              <h1><button type="submit" class="btn btn-primary btn-xs" name="wordNumber" th:value="${word.id}" >next</button></h1>
+              <button type="submit" class="btn btn-primary btn-xs" name="wordNumber" th:value="${word.id}" >next</button>
+              </h2>
             </div> 
           </form>
         </div>
+
       </th>
-      <th>
-        <div class="displayMean" align="center">
+      <th class="col-lg-3"> 
+        <div id="displayMean" align="center">
           <form method="post" th:action="@{/display/mean}" class="form-inline">
             <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
             <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
-            <input type="hidden" name="wordNumber" th:value="${wordNumber}" />  
+            <input type="hidden" name="wordNumber" th:value="${wordNumber}" />
+            <h3>  
             <span th:text="${mean}"></span>
+            </h3>
           </form>
         </div>
+
       </th>
     </tr>
   </table>
+</div>
 </div>
 </div>
 

@@ -129,18 +129,13 @@ public class MainController {
     }
 
     @PostMapping("/update/word")
-    public String updateWord(Integer sphereNumber, RedirectAttributes attr, String wordName, Integer subjectNumber) {
-
-        try {
+    public String updateWord(Integer sphereNumber, RedirectAttributes attr, String wordName, Integer subjectNumber ,boolean checked) {
+        
             for (int i = 1; i <= 100; i++) {
-                jdbc.update("INSERT INTO word VALUES(?,?,?,?,?)", count, wordName, null, subjectNumber, sphereNumber);
+                jdbc.update("INSERT INTO word VALUES(?,?,?,?,?,?)", count, wordName, null, subjectNumber, sphereNumber,null);
                 count += 1;
                 break;
             }
-        } catch (RuntimeException e) {
-            System.out.println("同じ単語名が使用されています。");
-        }
-
         List<Map<String, Object>> words = jdbc.queryForList(
                 "SELECT * FROM word WHERE subject_number=? AND sphere_number=? Order by id ASC", subjectNumber,
                 sphereNumber);
