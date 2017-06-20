@@ -4,25 +4,33 @@
 <meta charset="UTF-8" />
 <TITLE>暗記君</TITLE>
 
-<div style="background:#d3d3d3" align="center">
-    <img src="iii.png" alt="暗記君" title="暗記君"/>
+<div style="background:#d3d3d3" align="center" >
+    <img src="iii.png" alt="暗記君" title="暗記君" class="img-responsive" />
 </div>
 <style type="text/css">
 
 h1 {
     margin-left: auto;
 }
+div.toSphere {
+overflow-y:scroll;
+height: 300px;
+
+
+}
 div.toWord {
 overflow-y:scroll;
 height: 300px;
+
 }
 
 div.toMean {
 overflow-y:scroll;
 height: 300px;
+
 }
 div.displayMean {
-overflow-y:scroll;
+word-break: break-all;
 height: 300px;
 }
 </style>
@@ -35,7 +43,8 @@ height: 300px;
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-
+ 
+    
 </HEAD>
 
 <BODY bgcolor="honeydew">
@@ -46,39 +55,45 @@ height: 300px;
     <tr>
       <th>
         <div align="center">
-          <form method="post" th:action="@{/update/subject}">
-            <input type="text" name="subjectName" placeholder="科目を入力" />
-            <input type="submit" />
+          <form method="post" th:action="@{/update/subject}" class="form-inline">
+            <input type="text" name="subjectName" placeholder="科目を入力"  required="required" maxlength="20" class="form-control" />
+            <input type="submit"  class="btn btn-success" />
           </form>
         </div>
       </th>
       <th>
         <div align="center">
-          <form method="post" th:action="@{/update/sphere}">
-            <input type="text" name="sphereName" placeholder="範囲を入力"/>
-            <input type="submit" />
+          <form method="post" th:action="@{/update/sphere}" class="form-inline">
+            <input th:if="${currentSubject} != null" type="text" name="sphereName" placeholder="範囲を入力" required="required" maxlength="20" class="form-control" />
+            <input th:if="${currentSubject} == null" type="text" name="sphereName" placeholder="範囲を入力" required="required" maxlength="20" class="form-control" disabled="disabled" />
+            <input th:if="${currentSubject} != null" type="submit" class="btn btn-success"  />
+            <input th:if="${currentSubject} == null" type="submit" class="btn btn-success" disabled="disabled" />
             <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
           </form>
         </div>
       </th>
       <th>
         <div align="center">
-          <form method="post" th:action="@{/update/word}">
-            <input type="text" name="wordName" placeholder="単語を入力" />
-            <input type="submit" />
-            <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
-            <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
-          </form>
-        </div>
-      </th>
-      <th>
-        <div align="center">
-          <form method="post" th:action="@{/update/mean}">
+          <form method="post" th:action="@{/update/word}" class="form-inline">
+            <input th:if="${currentSphere} != null" type="text" name="wordName" placeholder="単語を入力" required="required" maxlength="30" class="form-control" />
+            <input th:if="${currentSphere} == null" type="text" name="wordName" placeholder="単語を入力" required="required" maxlength="30" class="form-control" disabled="disabled" />
+            <input th:if="${currentSphere} != null" type="submit" class="btn btn-success"  />
+            <input th:if="${currentSphere} == null" type="submit" class="btn btn-success"  disabled="disabled" />
             <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
             <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
-            <input type="hidden" name="selectWord" th:value="${selectWord}" />
-            <input type="text" name="mean" placeholder="意味を入力" />
-            <input type="submit" />
+          </form>
+        </div>
+      </th>
+      <th>
+        <div align="center">
+          <form method="post" th:action="@{/update/mean}" class="form-inline">
+            <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
+            <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
+            <input type="hidden" name="wordNumber" th:value="${wordNumber}" />
+            <input th:if="${currentWord} != null" type="text" name="mean" placeholder="意味を入力" required="required" maxlength="150" class="form-control" />
+            <input th:if="${currentWord} == null" type="text" name="mean" placeholder="意味を入力" required="required" maxlength="150" class="form-control" disabled="disabled" />
+            <input th:if="${currentWord} != null" type="submit" class="btn btn-success"  />
+            <input th:if="${currentWord} == null" type="submit" class="btn btn-success" disabled="disabled"  />
           </form>
         </div>
       </th>
@@ -116,7 +131,7 @@ height: 300px;
               <h3>
               <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
               <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
-              <input type="hidden" name="selectWord" th:value="${selectWord}" />
+              <input type="hidden" name="wordNumber" th:value="${wordNumber}" />
               <span th:text="${currentWord}"></span>
               </h3>
             </form>
@@ -125,8 +140,8 @@ height: 300px;
     </tr>
     <tr>
       <th>
-        <div align="center">
-          <form method="post" th:action="@{/to/sphere}">
+        <div class="toSphere" align="center">
+          <form method="post" th:action="@{/to/sphere}" class="form-inline" >
               <div th:each="subject : ${subjects}">
                 <span th:text="${subject.name}"></span>
                 <h1><button type="submit" class="btn btn-primary btn-xs" name="subjectNumber" th:value="${subject.number}" >next</button></h1>
@@ -136,7 +151,7 @@ height: 300px;
       </th>
       <th>
         <div class="toWord" align="center">
-          <form method="post" th:action="@{/to/word}">
+          <form method="post" th:action="@{/to/word}" class="form-inline">
             <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
             <div th:each="sphere : ${spheres}">
               <span th:text="${sphere.name}"></span>
@@ -147,22 +162,22 @@ height: 300px;
       </th>
       <th>
         <div class="toMean" align="center" >
-          <form method="post" th:action="@{/to/mean}">
+          <form method="post" th:action="@{/to/mean}" class="form-inline">
             <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
             <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
             <div th:each="word : ${words}"> 
               <span th:text="${word.name}"></span>
-              <h1><button type="submit" class="btn btn-primary btn-xs" name="selectWord" th:value="${word.name}" >next</button></h1>
+              <h1><button type="submit" class="btn btn-primary btn-xs" name="wordNumber" th:value="${word.id}" >next</button></h1>
             </div> 
           </form>
         </div>
       </th>
       <th>
         <div class="displayMean" align="center">
-          <form method="post" th:action="@{/display/mean}">
+          <form method="post" th:action="@{/display/mean}" class="form-inline">
             <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
             <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
-            <input type="hidden" name="selectWord" th:value="${selectWord}" />  
+            <input type="hidden" name="wordNumber" th:value="${wordNumber}" />  
             <span th:text="${mean}"></span>
           </form>
         </div>

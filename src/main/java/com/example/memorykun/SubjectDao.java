@@ -18,9 +18,11 @@ public class SubjectDao {
         return jdbc.query("SELECT * FROM subject", new BeanPropertyRowMapper<>(Subject.class));
     }
 
-    //public List<Subject> findById(int id){
-      //  return jdbc.query("SELECT * FROM subject WHERE id=?",id, new BeanPropertyRowMapper<>(Subject.class));
+    public List<Subject> findByNumber(int number){
+        return jdbc.query("SELECT * FROM subject WHERE id=?", new BeanPropertyRowMapper<>(Subject.class),number);
     }
+    
+}
 
 //SQLの変更はDAOのみ
 //各テーブルに対して発行されるSQLすべて確認できる

@@ -39,6 +39,27 @@ insert into sphere values(28,8,null,3);
 insert into sphere values(29,9,null,3);
 insert into sphere values(30,10,null,3);
 
+insert into sphere values(41,1,null,4);
+insert into sphere values(42,2,null,4);
+insert into sphere values(43,3,null,4);
+insert into sphere values(44,4,null,4);
+insert into sphere values(45,5,null,4);
+insert into sphere values(46,6,null,4);
+insert into sphere values(47,7,null,4);
+insert into sphere values(48,8,null,4);
+insert into sphere values(49,9,null,4);
+insert into sphere values(50,10,null,4);
+
+insert into sphere values(51,1,null,5);
+insert into sphere values(52,2,null,5);
+insert into sphere values(53,3,null,5);
+insert into sphere values(54,4,null,5);
+insert into sphere values(55,5,null,5);
+insert into sphere values(56,6,null,5);
+insert into sphere values(57,7,null,5);
+insert into sphere values(58,8,null,5);
+insert into sphere values(59,9,null,5);
+insert into sphere values(60,10,null,5);
 
 /*idをfor文で回してデータをupdate句で挿入、subjectにラジオボタンを持たせ、ラジオボタンが押されることでidを返すようにする。
  * 副問い合わせを用いて(select subno from subject where subname=('name'))subnoを挿入
