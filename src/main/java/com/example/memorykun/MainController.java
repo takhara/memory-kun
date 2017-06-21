@@ -72,6 +72,12 @@ public class MainController {
 
         attr.addFlashAttribute("currentSubject",
                 jdbc.queryForList("SELECT * FROM subject WHERE number = ?", subjectNumber).get(0).get("name"));
+        attr.addFlashAttribute("countAllWords",
+                jdbc.queryForList("SELECT count(id) FROM word where subject_number=?", subjectNumber).get(0)
+                        .get("count(ID)"));
+        attr.addFlashAttribute("countCheckedWords", jdbc
+                .queryForList("SELECT count(checked) FROM word where subject_number=? AND checked=true ", subjectNumber)
+                .get(0).get("count(checked)"));
         attr.addFlashAttribute("spheres", spheres);
         attr.addFlashAttribute("subjectNumber", subjectNumber);
 
@@ -98,6 +104,13 @@ public class MainController {
 
         attr.addFlashAttribute("currentSubject",
                 jdbc.queryForList("SELECT * FROM subject WHERE number = ?", subjectNumber).get(0).get("name"));
+        attr.addFlashAttribute("countAllWords",
+                jdbc.queryForList("SELECT count(id) FROM word where subject_number=?", subjectNumber).get(0)
+                        .get("count(ID)"));
+        attr.addFlashAttribute("countCheckedWords", jdbc
+                .queryForList("SELECT count(checked) FROM word where subject_number=? AND checked=true ", subjectNumber)
+                .get(0).get("count(checked)"));
+
         attr.addFlashAttribute("subjectNumber", subjectNumber);
         attr.addFlashAttribute("subjects", jdbc.queryForList("SELECT * FROM subject where name IS NOT NULL"));
         attr.addFlashAttribute("spheres", spheres);
@@ -117,6 +130,20 @@ public class MainController {
 
         attr.addFlashAttribute("currentSubject",
                 jdbc.queryForList("SELECT * FROM subject WHERE number = ?", subjectNumber).get(0).get("name"));
+        attr.addFlashAttribute("countAllWords",
+                jdbc.queryForList("SELECT count(id) FROM word where subject_number=?", subjectNumber).get(0)
+                        .get("count(ID)"));
+        attr.addFlashAttribute("countCheckedWords", jdbc
+                .queryForList("SELECT count(checked) FROM word where subject_number=? AND checked=true ", subjectNumber)
+                .get(0).get("count(checked)"));
+        attr.addFlashAttribute("countSphereWords",
+                jdbc.queryForList("SELECT count(id) FROM word where subject_number=? AND sphere_number=?",
+                        subjectNumber, sphereNumber).get(0).get("count(ID)"));
+        attr.addFlashAttribute("countSphereCheckedWords",
+                jdbc.queryForList(
+                        "SELECT count(checked) FROM word where subject_number=? AND sphere_number=? AND checked=true ",
+                        subjectNumber, sphereNumber).get(0).get("count(checked)"));
+
         attr.addFlashAttribute("currentSphere", jdbc
                 .queryForList("SELECT * FROM sphere WHERE subject_number = ? AND number=?", subjectNumber, sphereNumber)
                 .get(0).get("name"));
@@ -129,19 +156,36 @@ public class MainController {
     }
 
     @PostMapping("/update/word")
-    public String updateWord(Integer sphereNumber, RedirectAttributes attr, String wordName, Integer subjectNumber ,boolean checked) {
-        
-            for (int i = 1; i <= 100; i++) {
-                jdbc.update("INSERT INTO word VALUES(?,?,?,?,?,?)", count, wordName, null, subjectNumber, sphereNumber,null);
-                count += 1;
-                break;
-            }
+    public String updateWord(int sphereNumber, RedirectAttributes attr, String wordName, Integer subjectNumber,
+            boolean checked) {
+
+        for (int i = 1; i <= 100; i++) {
+            jdbc.update("INSERT INTO word VALUES(?,?,?,?,?,?)", count, wordName, null, subjectNumber, sphereNumber,
+                    null);
+            count += 1;
+            break;
+        }
         List<Map<String, Object>> words = jdbc.queryForList(
                 "SELECT * FROM word WHERE subject_number=? AND sphere_number=? Order by id ASC", subjectNumber,
                 sphereNumber);
 
         attr.addFlashAttribute("currentSubject",
                 jdbc.queryForList("SELECT * FROM subject WHERE number = ?", subjectNumber).get(0).get("name"));
+        attr.addFlashAttribute("countAllWords",
+                jdbc.queryForList("SELECT count(id) FROM word where subject_number=?", subjectNumber).get(0)
+                        .get("count(ID)"));
+        attr.addFlashAttribute("countCheckedWords", jdbc
+                .queryForList("SELECT count(checked) FROM word where subject_number=? AND checked=true ", subjectNumber)
+                .get(0).get("count(checked)"));
+        attr.addFlashAttribute("countSphereWords",
+                jdbc.queryForList("SELECT count(id) FROM word where subject_number=? AND sphere_number=?",
+                        subjectNumber, sphereNumber).get(0).get("count(ID)"));
+
+        attr.addFlashAttribute("countSphereCheckedWords",
+                jdbc.queryForList(
+                        "SELECT count(checked) FROM word where subject_number=? AND sphere_number=? AND checked=true ",
+                        subjectNumber, sphereNumber).get(0).get("count(checked)"));
+
         attr.addFlashAttribute("currentSphere", jdbc
                 .queryForList("SELECT * FROM sphere WHERE subject_number = ? AND number=?", subjectNumber, sphereNumber)
                 .get(0).get("name"));
@@ -163,13 +207,28 @@ public class MainController {
 
         List<Map<String, Object>> words = jdbc.queryForList(
                 "SELECT * FROM word WHERE subject_number= ? AND  sphere_number=?", subjectNumber, sphereNumber);
-        attr.addFlashAttribute("mean",
-                jdbc.queryForList(
-                        "SELECT * FROM word WHERE name IS NOT NULL AND subject_number=? AND sphere_number=? AND id=?",
-                        subjectNumber, sphereNumber, wordNumber).get(0).get("mean"));
+
+        List<Map<String, Object>> means = jdbc.queryForList("SELECT * FROM word WHERE id=?", wordNumber);
+
+        attr.addFlashAttribute("means", means);
         attr.addFlashAttribute("words", words);
         attr.addFlashAttribute("currentSubject",
                 jdbc.queryForList("SELECT * FROM subject WHERE number = ?", subjectNumber).get(0).get("name"));
+        attr.addFlashAttribute("countAllWords",
+                jdbc.queryForList("SELECT count(id) FROM word where subject_number=?", subjectNumber).get(0)
+                        .get("count(ID)"));
+        attr.addFlashAttribute("countCheckedWords", jdbc
+                .queryForList("SELECT count(checked) FROM word where subject_number=? AND checked=true ", subjectNumber)
+                .get(0).get("count(checked)"));
+        attr.addFlashAttribute("countSphereWords",
+                jdbc.queryForList("SELECT count(id) FROM word where subject_number=? AND sphere_number=?",
+                        subjectNumber, sphereNumber).get(0).get("count(ID)"));
+
+        attr.addFlashAttribute("countSphereCheckedWords",
+                jdbc.queryForList(
+                        "SELECT count(checked) FROM word where subject_number=? AND sphere_number=? AND checked=true ",
+                        subjectNumber, sphereNumber).get(0).get("count(checked)"));
+
         attr.addFlashAttribute("currentSphere", jdbc
                 .queryForList("SELECT * FROM sphere WHERE subject_number = ? AND number=?", subjectNumber, sphereNumber)
                 .get(0).get("name"));
@@ -186,7 +245,7 @@ public class MainController {
     }
 
     @PostMapping("/to/mean")
-    public String toMean(int subjectNumber, RedirectAttributes attr, int sphereNumber, int wordNumber) {
+    public String toMean(Integer subjectNumber, RedirectAttributes attr, Integer sphereNumber, Integer wordNumber) {
 
         List<Map<String, Object>> spheres = jdbc
                 .queryForList("SELECT * FROM sphere WHERE name IS NOT NULL AND subject_number=?", subjectNumber);
@@ -194,6 +253,7 @@ public class MainController {
         List<Map<String, Object>> words = jdbc.queryForList(
                 "SELECT * FROM word WHERE name IS NOT NULL AND subject_number=? AND sphere_number=?", subjectNumber,
                 sphereNumber);
+        List<Map<String, Object>> means = jdbc.queryForList("SELECT * FROM word WHERE id=?", wordNumber);
         // Map<String, Object> mean = jdbc
         // .queryForList("SELECT * FROM word WHERE name IS NOT NULL AND
         // subject_number=? AND sphere_number=?",
@@ -206,21 +266,40 @@ public class MainController {
                 .get(0).get("name"));
         attr.addFlashAttribute("currentSubject",
                 jdbc.queryForList("SELECT * FROM subject WHERE number = ?", subjectNumber).get(0).get("name"));
+        attr.addFlashAttribute("countAllWords",
+                jdbc.queryForList("SELECT count(id) FROM word where subject_number=?", subjectNumber).get(0)
+                        .get("count(ID)"));
+        attr.addFlashAttribute("countCheckedWords", jdbc
+                .queryForList("SELECT count(checked) FROM word where subject_number=? AND checked=true ", subjectNumber)
+                .get(0).get("count(checked)"));
+        attr.addFlashAttribute("countSphereWords",
+                jdbc.queryForList("SELECT count(id) FROM word where subject_number=? AND sphere_number=?",
+                        subjectNumber, sphereNumber).get(0).get("count(ID)"));
+        attr.addFlashAttribute("countSphereCheckedWords",
+                jdbc.queryForList(
+                        "SELECT count(checked) FROM word where subject_number=? AND sphere_number=? AND checked=true ",
+                        subjectNumber, sphereNumber).get(0).get("count(checked)"));
+
         attr.addFlashAttribute("subjectNumber", subjectNumber);
         attr.addFlashAttribute("sphereNumber", sphereNumber);
         attr.addFlashAttribute("wordNumber", wordNumber);
         attr.addFlashAttribute("spheres", spheres);
         attr.addFlashAttribute("words", words);
-        attr.addFlashAttribute("mean",
-                jdbc.queryForList(
-                        "SELECT * FROM word WHERE name IS NOT NULL AND subject_number=? AND sphere_number=? AND id=?",
-                        subjectNumber, sphereNumber, wordNumber).get(0).get("mean"));
+        attr.addFlashAttribute("means", means);
+        // attr.addFlashAttribute("mean",
+        // jdbc.queryForList(
+        // "SELECT * FROM word WHERE name IS NOT NULL AND subject_number=? AND
+        // sphere_number=? AND id=?",
+        // subjectNumber, sphereNumber, wordNumber).get(0).get("mean"));
 
         return "redirect:/memory-kun";
     }
 
     @PostMapping("/display/mean")
-    public String displayMean(int subjectNumber, RedirectAttributes attr, int sphereNumber, int wordNumber) {
+    public String displayMean(Integer subjectNumber, RedirectAttributes attr, Integer sphereNumber, Integer wordNumber,
+            String checked) {
+
+        jdbc.update("UPDATE word set checked=? where id=?", checked, wordNumber);
 
         List<Map<String, Object>> words = jdbc.queryForList(
                 "SELECT * FROM word WHERE name IS NOT NULL AND subject_number=? AND sphere_number=?", subjectNumber,
@@ -228,6 +307,22 @@ public class MainController {
         List<Map<String, Object>> spheres = jdbc
                 .queryForList("SELECT * FROM sphere WHERE name IS NOT NULL AND subject_number=?", subjectNumber);
 
+        List<Map<String, Object>> means = jdbc.queryForList("SELECT * FROM word WHERE id=?", wordNumber);
+
+        attr.addFlashAttribute("countAllWords",
+                jdbc.queryForList("SELECT count(id) FROM word where subject_number=?", subjectNumber).get(0)
+                        .get("count(ID)"));
+        attr.addFlashAttribute("countCheckedWords", jdbc
+                .queryForList("SELECT count(checked) FROM word where subject_number=? AND checked=true ", subjectNumber)
+                .get(0).get("count(checked)"));
+        attr.addFlashAttribute("countSphereWords",
+                jdbc.queryForList("SELECT count(id) FROM word where subject_number=? AND sphere_number=?",
+                        subjectNumber, sphereNumber).get(0).get("count(ID)"));
+
+        attr.addFlashAttribute("countSphereCheckedWords",
+                jdbc.queryForList(
+                        "SELECT count(checked) FROM word where subject_number=? AND sphere_number=? AND checked=true ",
+                        subjectNumber, sphereNumber).get(0).get("count(checked)"));
         attr.addFlashAttribute("currentWord",
                 jdbc.queryForList("SELECT * FROM word WHERE id=?", wordNumber).get(0).get("name"));
         attr.addFlashAttribute("currentSphere", jdbc
@@ -235,16 +330,20 @@ public class MainController {
                 .get(0).get("name"));
         attr.addFlashAttribute("currentSubject",
                 jdbc.queryForList("SELECT * FROM subject WHERE number = ?", subjectNumber).get(0).get("name"));
+        attr.addFlashAttribute("means", means);
         attr.addFlashAttribute("spheres", spheres);
         attr.addFlashAttribute("sphereNumber", sphereNumber);
         attr.addFlashAttribute("words", words);
         attr.addFlashAttribute("subjectNumber", subjectNumber);
         attr.addFlashAttribute("sphereNumber", sphereNumber);
         attr.addFlashAttribute("wordNumber", wordNumber);
-        attr.addFlashAttribute("mean",
-                jdbc.queryForList(
-                        "SELECT * FROM word WHERE name IS NOT NULL AND subject_number=? AND sphere_number=? AND id=?",
-                        subjectNumber, sphereNumber, wordNumber).get(0).get("mean"));
+        attr.addFlashAttribute("checked", checked);
+
+        // attr.addFlashAttribute("mean",
+        // jdbc.queryForList(
+        // "SELECT * FROM word WHERE name IS NOT NULL AND subject_number=? AND
+        // sphere_number=? AND id=?",
+        // subjectNumber, sphereNumber, wordNumber).get(0).get("mean"));
 
         return "redirect:/memory-kun";
     }
@@ -254,6 +353,14 @@ public class MainController {
 
         attr.addFlashAttribute("currentSubject",
                 jdbc.queryForList("SELECT * FROM subject WHERE number = ?", subjectNumber).get(0).get("name"));
+
+        attr.addFlashAttribute("countAllWords",
+                jdbc.queryForList("SELECT count(id) FROM word where subject_number=?", subjectNumber).get(0)
+                        .get("count(ID)"));
+        attr.addFlashAttribute("countCheckedWords", jdbc
+                .queryForList("SELECT count(checked) FROM word where subject_number=? AND checked=true ", subjectNumber)
+                .get(0).get("count(checked)"));
+
         attr.addFlashAttribute("subjectNumber", subjectNumber);
         return "redirect:/memory-kun";
     }
@@ -264,6 +371,23 @@ public class MainController {
         attr.addFlashAttribute("currentSphere", jdbc
                 .queryForList("SELECT * FROM sphere WHERE subject_number = ? AND number=?", subjectNumber, sphereNumber)
                 .get(0).get("name"));
+
+        attr.addFlashAttribute("countSphereWords",
+                jdbc.queryForList("SELECT count(id) FROM word where subject_number=? AND sphere_number=?",
+                        subjectNumber, sphereNumber).get(0).get("count(ID)"));
+
+        attr.addFlashAttribute("countSphereCheckedWords",
+                jdbc.queryForList(
+                        "SELECT count(checked) FROM word where subject_number=? AND sphere_number=? AND checked=true ",
+                        subjectNumber, sphereNumber).get(0).get("count(checked)"));
+
+        attr.addFlashAttribute("text",
+                jdbc.queryForList(
+                        "SELECT count(checked) FROM word where subject_number=? AND sphere_number=? AND checked=true ",
+                        subjectNumber, sphereNumber).get(0).get("count(checked)") + "/"
+                        + jdbc.queryForList("SELECT count(id) FROM word where subject_number=? AND sphere_number=?",
+                                subjectNumber, sphereNumber).get(0).get("count(ID)"));
+
         attr.addFlashAttribute("subjectNumber", subjectNumber);
         attr.addFlashAttribute("sphereNumber", sphereNumber);
         return "redirect:/memory-kun";
