@@ -1,7 +1,6 @@
 package com.example.memorykun;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -15,14 +14,20 @@ public class SubjectDao {
     private JdbcTemplate jdbc;
 
     public List<Subject> findAll(){
-        return jdbc.query("SELECT * FROM subject", new BeanPropertyRowMapper<>(Subject.class));
+        return jdbc.query("SELECT * FROM subject WHERE name IS NOT NULL", new BeanPropertyRowMapper<>(Subject.class));
     }
 
-    public List<Subject> findByNumber(int number){
-        return jdbc.query("SELECT * FROM subject WHERE id=?", new BeanPropertyRowMapper<>(Subject.class),number);
+    public Subject findSubjectByNumber(Integer subjectNumber){
+        return jdbc.queryForObject("SELECT * FROM subject WHERE number=?",
+                new BeanPropertyRowMapper<>(Subject.class), subjectNumber);
+    }
+
+    public void UpdateSubject(String subjectName, int size){
+         jdbc.update("UPDATE subject set name=? where number=? And name IS NULL", subjectName,size);
     }
     
 }
+
 
 //SQLの変更はDAOのみ
 //各テーブルに対して発行されるSQLすべて確認できる

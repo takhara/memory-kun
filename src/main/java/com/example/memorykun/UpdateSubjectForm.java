@@ -6,6 +6,6 @@ import lombok.Data;
 public class UpdateSubjectForm {
 
     private String subjectName;
-    private Integer subjectNumber;
+
     
 }

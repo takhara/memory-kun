@@ -12,9 +12,20 @@ public class SphereDao {
 
     @Autowired
     private JdbcTemplate jdbc;
-    
-    public List<Sphere> findByNumber(int number){
-        return jdbc.query("SELECT * FROM subject WHERE id=?", new BeanPropertyRowMapper<>(Sphere.class),number);
+
+    public List<Sphere> findSphereBySubjectNumber(Integer subjectNumber){
+        return jdbc.query("SELECT * FROM sphere WHERE subject_number=? AND name IS NOT NULL", new BeanPropertyRowMapper<>(Sphere.class),subjectNumber);
     }
+    public Sphere findCurrentSphereBySubjectNumberAndSphereNumber(Integer subjectNumber, Integer sphereNumber){
+        return jdbc.queryForObject("SELECT * FROM sphere WHERE subject_number = ? AND number=?", new BeanPropertyRowMapper<>(Sphere.class),subjectNumber,sphereNumber);
+    } 
+
+    public void UpdateSphere(String sphereName, Integer sphereNumber,Integer subjectNumber ){
+         jdbc.update("UPDATE sphere set name=? where number=? AND name IS NULL AND subject_number=?", sphereName,sphereNumber,subjectNumber);
+    }
+    
+
+
+    
     
 }

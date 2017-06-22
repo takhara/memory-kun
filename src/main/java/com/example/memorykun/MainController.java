@@ -13,7 +13,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller // クラス
 public class MainController {
-
+@Autowired
+private JdbcTemplate jdbc;
+    
     @GetMapping("/memory-kun")
     public String hello(Model model) {
         model.addAttribute("subjects", jdbc.queryForList("SELECT * FROM subject WHERE name IS NOT null"));
@@ -21,384 +23,254 @@ public class MainController {
         return "memory-kun";
     }
 
-    // @Autowired // DBを使うのに必要
-    /*
-     * private SubjectDao subjectDao;
-     * 
-     * @GetMapping("/test") public String test() {
-     * System.out.println(subjectDao.findById(1));
-     * 
-     * return ""; }
-     */
-
     @Autowired
-    private JdbcTemplate jdbc;
-
+    private SubjectDao subjectDao;
+    
+    @Autowired
+    private SphereDao sphereDao;
+    
+    @Autowired
+    private WordDao wordDao;
+    
     int count = 1;
 
     @PostMapping("/update/subject") /* HTML 14 (th:action="@{/form})、メソッド */
-
     public String updateSubject(UpdateSubjectForm form, RedirectAttributes attr) {
-
-        // どこまでデータが入っているかを確かめる,get(0)は一つのデータを持ってくるという意味、
+        
         int size = 0;
         for (int i = 1; i <= 5; i++) {
-            if (jdbc.queryForList("SELECT * FROM subject WHERE number = ?", i).get(0).get("name") == null) {
-                size = i - 1;
+            if (subjectDao.findSubjectByNumber(i).getName() == null) {
+                size = i;
                 break;
             }
         }
-
-        // 2.DBを更新する
-        jdbc.update("UPDATE subject set name=? where number=? And name IS NULL", form.getSubjectName(), size + 1);
-
-        // 3.DBから値を読み込む
-        List<Map<String, Object>> subjects = jdbc.queryForList("SELECT * FROM subject WHERE name IS NOT null");
-        // 取ってくる情報が一つだけなら、
-        // Map<String, Object> subject = jdbc.queryForList(SELECT * FROM subject
-        // WHERE id =値);
-
-        // 4.値を返してあげる、リストで返している
+        
+        subjectDao.UpdateSubject(form.getSubjectName(), size);
+        List<Subject> subjects = subjectDao.findAll();
         attr.addFlashAttribute("subjects", subjects);
 
         return "redirect:/memory-kun";
     }
 
     @PostMapping("/to/sphere")
-    public String toSphere(Integer subjectNumber, RedirectAttributes attr) {
+    public String toSphere(ToSphereForm form, RedirectAttributes attr) {
 
-        List<Map<String, Object>> spheres = jdbc
-                .queryForList("SELECT * FROM sphere WHERE name IS NOT null AND subject_number = ?", subjectNumber);
+        List<Sphere> spheres = sphereDao.findSphereBySubjectNumber(form.getSubjectNumber());
 
+        attr.addFlashAttribute("countAllWords", wordDao.countWordsBySubjectNumber(form.getSubjectNumber()));
+        attr.addFlashAttribute("countCheckedWords", wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
         attr.addFlashAttribute("currentSubject",
-                jdbc.queryForList("SELECT * FROM subject WHERE number = ?", subjectNumber).get(0).get("name"));
-        attr.addFlashAttribute("countAllWords",
-                jdbc.queryForList("SELECT count(id) FROM word where subject_number=?", subjectNumber).get(0)
-                        .get("count(ID)"));
-        attr.addFlashAttribute("countCheckedWords", jdbc
-                .queryForList("SELECT count(checked) FROM word where subject_number=? AND checked=true ", subjectNumber)
-                .get(0).get("count(checked)"));
+                subjectDao.findSubjectByNumber(form.getSubjectNumber()).getName());
+        attr.addFlashAttribute("subjectNumber", form.getSubjectNumber());
         attr.addFlashAttribute("spheres", spheres);
-        attr.addFlashAttribute("subjectNumber", subjectNumber);
 
         return "redirect:/memory-kun";
     }
 
     @PostMapping("/update/sphere") /* HTML 14 (th:action="@{/form})、メソッド */
-    public String updateSphere(String sphereName, RedirectAttributes attr, Integer subjectNumber) {
+    public String updateSphere(UpdateSphereForm form, RedirectAttributes attr) {
 
         int size = 0;
-
         for (int i = 1; i <= 10; i++) {
-            if (jdbc.queryForList("SELECT * FROM sphere WHERE number=? AND subject_number=?", i, subjectNumber).get(0)
-                    .get("name") == null) {
-                size = i - 1;
+            if (sphereDao.findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), i).getName() == null) {
+                size = i;
                 break;
             }
         }
 
-        jdbc.update("UPDATE sphere set name=? where number=? AND name IS NULL AND subject_number=?", sphereName,
-                size + 1, subjectNumber);
-        List<Map<String, Object>> spheres = jdbc
-                .queryForList("SELECT * FROM sphere WHERE name IS NOT NULL AND subject_number= ?", subjectNumber);
+        sphereDao.UpdateSphere(form.getSphereName(), size, form.getSubjectNumber());
 
-        attr.addFlashAttribute("currentSubject",
-                jdbc.queryForList("SELECT * FROM subject WHERE number = ?", subjectNumber).get(0).get("name"));
-        attr.addFlashAttribute("countAllWords",
-                jdbc.queryForList("SELECT count(id) FROM word where subject_number=?", subjectNumber).get(0)
-                        .get("count(ID)"));
-        attr.addFlashAttribute("countCheckedWords", jdbc
-                .queryForList("SELECT count(checked) FROM word where subject_number=? AND checked=true ", subjectNumber)
-                .get(0).get("count(checked)"));
+        List<Sphere> spheres = sphereDao.findSphereBySubjectNumber(form.getSubjectNumber());
 
-        attr.addFlashAttribute("subjectNumber", subjectNumber);
-        attr.addFlashAttribute("subjects", jdbc.queryForList("SELECT * FROM subject where name IS NOT NULL"));
+        attr.addFlashAttribute("countAllWords", wordDao.countWordsBySubjectNumber(form.getSubjectNumber()));
+        attr.addFlashAttribute("countCheckedWords", wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
+        attr.addFlashAttribute("currentSubject", subjectDao.findSubjectByNumber(form.getSubjectNumber()).getName());
+        attr.addFlashAttribute("subjectNumber", form.getSubjectNumber());
+        attr.addFlashAttribute("subjects", subjectDao.findAll());
         attr.addFlashAttribute("spheres", spheres);
 
         return "redirect:/memory-kun";
     }
 
     @PostMapping("/to/word")
-    public String toWord(int subjectNumber, RedirectAttributes attr, Integer sphereNumber) {
+    public String toWord(ToWordForm form, RedirectAttributes attr) {
 
-        List<Map<String, Object>> spheres = jdbc
-                .queryForList("SELECT * FROM sphere WHERE name IS NOT NULL AND subject_number=?", subjectNumber);
+        List<Sphere> spheres = sphereDao.findSphereBySubjectNumber(form.getSubjectNumber());
 
-        List<Map<String, Object>> words = jdbc.queryForList(
-                "SELECT * FROM word WHERE name IS NOT NULL AND subject_number=? AND sphere_number=?", subjectNumber,
-                sphereNumber);
+        List<Word> words = wordDao.findWord(form.getSubjectNumber(), form.getSphereNumber());
 
-        attr.addFlashAttribute("currentSubject",
-                jdbc.queryForList("SELECT * FROM subject WHERE number = ?", subjectNumber).get(0).get("name"));
-        attr.addFlashAttribute("countAllWords",
-                jdbc.queryForList("SELECT count(id) FROM word where subject_number=?", subjectNumber).get(0)
-                        .get("count(ID)"));
-        attr.addFlashAttribute("countCheckedWords", jdbc
-                .queryForList("SELECT count(checked) FROM word where subject_number=? AND checked=true ", subjectNumber)
-                .get(0).get("count(checked)"));
+        attr.addFlashAttribute("countAllWords", wordDao.countWordsBySubjectNumber(form.getSubjectNumber()));
+        attr.addFlashAttribute("countCheckedWords", wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
         attr.addFlashAttribute("countSphereWords",
-                jdbc.queryForList("SELECT count(id) FROM word where subject_number=? AND sphere_number=?",
-                        subjectNumber, sphereNumber).get(0).get("count(ID)"));
+                wordDao.countWordsBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()));
         attr.addFlashAttribute("countSphereCheckedWords",
-                jdbc.queryForList(
-                        "SELECT count(checked) FROM word where subject_number=? AND sphere_number=? AND checked=true ",
-                        subjectNumber, sphereNumber).get(0).get("count(checked)"));
-
-        attr.addFlashAttribute("currentSphere", jdbc
-                .queryForList("SELECT * FROM sphere WHERE subject_number = ? AND number=?", subjectNumber, sphereNumber)
-                .get(0).get("name"));
+                wordDao.countWordsByAndSubjectNumberSphereNumberChecked(form.getSubjectNumber(), form.getSubjectNumber(),true));
+        attr.addFlashAttribute("currentSubject", subjectDao.findSubjectByNumber(form.getSubjectNumber()).getName());
+        attr.addFlashAttribute("currentSphere",
+                sphereDao.findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()).getName());
         attr.addFlashAttribute("spheres", spheres);
         attr.addFlashAttribute("words", words);
-        attr.addFlashAttribute("subjectNumber", subjectNumber);
-        attr.addFlashAttribute("sphereNumber", sphereNumber);
+        attr.addFlashAttribute("subjectNumber", form.getSubjectNumber());
+        attr.addFlashAttribute("sphereNumber", form.getSphereNumber());
 
         return "redirect:/memory-kun";
     }
 
     @PostMapping("/update/word")
-    public String updateWord(int sphereNumber, RedirectAttributes attr, String wordName, Integer subjectNumber,
-            boolean checked) {
+    public String updateWord(UpdateWordForm form, RedirectAttributes attr) {
 
         for (int i = 1; i <= 100; i++) {
-            jdbc.update("INSERT INTO word VALUES(?,?,?,?,?,?)", count, wordName, null, subjectNumber, sphereNumber,
-                    null);
+            wordDao.insertWord(form.getWordName(), count, form.getSubjectNumber(), form.getSphereNumber());
             count += 1;
             break;
         }
-        List<Map<String, Object>> words = jdbc.queryForList(
-                "SELECT * FROM word WHERE subject_number=? AND sphere_number=? Order by id ASC", subjectNumber,
-                sphereNumber);
 
-        attr.addFlashAttribute("currentSubject",
-                jdbc.queryForList("SELECT * FROM subject WHERE number = ?", subjectNumber).get(0).get("name"));
-        attr.addFlashAttribute("countAllWords",
-                jdbc.queryForList("SELECT count(id) FROM word where subject_number=?", subjectNumber).get(0)
-                        .get("count(ID)"));
-        attr.addFlashAttribute("countCheckedWords", jdbc
-                .queryForList("SELECT count(checked) FROM word where subject_number=? AND checked=true ", subjectNumber)
-                .get(0).get("count(checked)"));
+        List<Word> words = wordDao.findWord(form.getSubjectNumber(), form.getSphereNumber());
+
+        attr.addFlashAttribute("countAllWords", wordDao.countWordsBySubjectNumber(form.getSubjectNumber()));
+        attr.addFlashAttribute("countCheckedWords", wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
         attr.addFlashAttribute("countSphereWords",
-                jdbc.queryForList("SELECT count(id) FROM word where subject_number=? AND sphere_number=?",
-                        subjectNumber, sphereNumber).get(0).get("count(ID)"));
-
+                wordDao.countWordsBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()));
         attr.addFlashAttribute("countSphereCheckedWords",
-                jdbc.queryForList(
-                        "SELECT count(checked) FROM word where subject_number=? AND sphere_number=? AND checked=true ",
-                        subjectNumber, sphereNumber).get(0).get("count(checked)"));
-
-        attr.addFlashAttribute("currentSphere", jdbc
-                .queryForList("SELECT * FROM sphere WHERE subject_number = ? AND number=?", subjectNumber, sphereNumber)
-                .get(0).get("name"));
+                wordDao.countWordsByAndSubjectNumberSphereNumberChecked(form.getSubjectNumber(), form.getSubjectNumber(),true));
+        attr.addFlashAttribute("currentSubject", subjectDao.findSubjectByNumber(form.getSubjectNumber()).getName());
+        attr.addFlashAttribute("currentSphere",
+                sphereDao.findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()).getName());
+        attr.addFlashAttribute("subjectNumber", form.getSubjectNumber());
+        attr.addFlashAttribute("sphereNumber", form.getSphereNumber());
+        attr.addFlashAttribute("subjects", subjectDao.findAll());
+        attr.addFlashAttribute("spheres", sphereDao.findSphereBySubjectNumber(form.getSubjectNumber()));
         attr.addFlashAttribute("words", words);
-        attr.addFlashAttribute("subjectNumber", subjectNumber);
-        attr.addFlashAttribute("sphereNumber", sphereNumber);
-        attr.addFlashAttribute("subjects", jdbc.queryForList("SELECT * FROM subject where name IS NOT NULL"));
-        attr.addFlashAttribute("spheres",
-                jdbc.queryForList("SELECT * FROM sphere where name IS NOT NULL AND subject_number=?", subjectNumber));
+
         return "redirect:/memory-kun";
     }
 
     @PostMapping("/update/mean")
-    public String updateMean(String wordNumber, RedirectAttributes attr, String mean, Integer subjectNumber,
-            int sphereNumber) {
+    public String updateMean(UpdateMeanForm form, RedirectAttributes attr) {
 
-        jdbc.update("UPDATE word set mean=? where id=? AND subject_number=? AND sphere_number=?", mean, wordNumber,
-                subjectNumber, sphereNumber);
+        wordDao.updateMean(form.getMean(), form.getWordNumber());
 
-        List<Map<String, Object>> words = jdbc.queryForList(
-                "SELECT * FROM word WHERE subject_number= ? AND  sphere_number=?", subjectNumber, sphereNumber);
+        List<Word> words = wordDao.findWord(form.getSubjectNumber(), form.getSphereNumber());
 
-        List<Map<String, Object>> means = jdbc.queryForList("SELECT * FROM word WHERE id=?", wordNumber);
-
+        List<Word> means = wordDao.findMean(form.getWordNumber());
+        
+        attr.addFlashAttribute("countAllWords", wordDao.countWordsBySubjectNumber(form.getSubjectNumber()));
+        attr.addFlashAttribute("countCheckedWords", wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
+        attr.addFlashAttribute("countSphereWords",
+                wordDao.countWordsBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()));
+        attr.addFlashAttribute("countSphereCheckedWords",
+                wordDao.countWordsByAndSubjectNumberSphereNumberChecked(form.getSubjectNumber(), form.getSubjectNumber(),true));
+        attr.addFlashAttribute("currentSubject", subjectDao.findSubjectByNumber(form.getSubjectNumber()).getName());
+        attr.addFlashAttribute("currentSphere",
+                sphereDao.findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()).getName());
+        attr.addFlashAttribute("currentWord",
+                wordDao.findCurrentWord(form.getWordNumber()));
+        attr.addFlashAttribute("subjectNumber", form.getSubjectNumber());
+        attr.addFlashAttribute("sphereNumber", form.getSphereNumber());
+        attr.addFlashAttribute("wordNumber", form.getWordNumber());
+        attr.addFlashAttribute("subjects", subjectDao.findAll());
+        attr.addFlashAttribute("spheres", sphereDao.findSphereBySubjectNumber(form.getSubjectNumber()));
         attr.addFlashAttribute("means", means);
         attr.addFlashAttribute("words", words);
-        attr.addFlashAttribute("currentSubject",
-                jdbc.queryForList("SELECT * FROM subject WHERE number = ?", subjectNumber).get(0).get("name"));
-        attr.addFlashAttribute("countAllWords",
-                jdbc.queryForList("SELECT count(id) FROM word where subject_number=?", subjectNumber).get(0)
-                        .get("count(ID)"));
-        attr.addFlashAttribute("countCheckedWords", jdbc
-                .queryForList("SELECT count(checked) FROM word where subject_number=? AND checked=true ", subjectNumber)
-                .get(0).get("count(checked)"));
-        attr.addFlashAttribute("countSphereWords",
-                jdbc.queryForList("SELECT count(id) FROM word where subject_number=? AND sphere_number=?",
-                        subjectNumber, sphereNumber).get(0).get("count(ID)"));
-
-        attr.addFlashAttribute("countSphereCheckedWords",
-                jdbc.queryForList(
-                        "SELECT count(checked) FROM word where subject_number=? AND sphere_number=? AND checked=true ",
-                        subjectNumber, sphereNumber).get(0).get("count(checked)"));
-
-        attr.addFlashAttribute("currentSphere", jdbc
-                .queryForList("SELECT * FROM sphere WHERE subject_number = ? AND number=?", subjectNumber, sphereNumber)
-                .get(0).get("name"));
-        attr.addFlashAttribute("currentWord",
-                jdbc.queryForList("SELECT * FROM word WHERE id=?", wordNumber).get(0).get("name"));
-        attr.addFlashAttribute("subjectNumber", subjectNumber);
-        attr.addFlashAttribute("sphereNumber", sphereNumber);
-        attr.addFlashAttribute("wordNumber", wordNumber);
-        attr.addFlashAttribute("subjects", jdbc.queryForList("SELECT * FROM subject where name IS NOT NULL"));
-        attr.addFlashAttribute("spheres",
-                jdbc.queryForList("SELECT * FROM sphere where name IS NOT NULL AND subject_number=?", subjectNumber));
 
         return "redirect:/memory-kun";
     }
 
     @PostMapping("/to/mean")
-    public String toMean(Integer subjectNumber, RedirectAttributes attr, Integer sphereNumber, Integer wordNumber) {
+    public String toMean(ToMeanForm form, RedirectAttributes attr) {
 
-        List<Map<String, Object>> spheres = jdbc
-                .queryForList("SELECT * FROM sphere WHERE name IS NOT NULL AND subject_number=?", subjectNumber);
+        List<Word> means = wordDao.findMean(form.getWordNumber());
 
-        List<Map<String, Object>> words = jdbc.queryForList(
-                "SELECT * FROM word WHERE name IS NOT NULL AND subject_number=? AND sphere_number=?", subjectNumber,
-                sphereNumber);
-        List<Map<String, Object>> means = jdbc.queryForList("SELECT * FROM word WHERE id=?", wordNumber);
-        // Map<String, Object> mean = jdbc
-        // .queryForList("SELECT * FROM word WHERE name IS NOT NULL AND
-        // subject_number=? AND sphere_number=?",
-        // subjectNumber,sphereNumber).get(0);
+        List<Word> words = wordDao.findWord(form.getSubjectNumber(), form.getSphereNumber());
 
-        attr.addFlashAttribute("currentWord",
-                jdbc.queryForList("SELECT * FROM word WHERE id=?", wordNumber).get(0).get("name"));
-        attr.addFlashAttribute("currentSphere", jdbc
-                .queryForList("SELECT * FROM sphere WHERE subject_number = ? AND number=?", subjectNumber, sphereNumber)
-                .get(0).get("name"));
-        attr.addFlashAttribute("currentSubject",
-                jdbc.queryForList("SELECT * FROM subject WHERE number = ?", subjectNumber).get(0).get("name"));
-        attr.addFlashAttribute("countAllWords",
-                jdbc.queryForList("SELECT count(id) FROM word where subject_number=?", subjectNumber).get(0)
-                        .get("count(ID)"));
-        attr.addFlashAttribute("countCheckedWords", jdbc
-                .queryForList("SELECT count(checked) FROM word where subject_number=? AND checked=true ", subjectNumber)
-                .get(0).get("count(checked)"));
+        attr.addFlashAttribute("countAllWords", wordDao.countWordsBySubjectNumber(form.getSubjectNumber()));
+        attr.addFlashAttribute("countCheckedWords", wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
         attr.addFlashAttribute("countSphereWords",
-                jdbc.queryForList("SELECT count(id) FROM word where subject_number=? AND sphere_number=?",
-                        subjectNumber, sphereNumber).get(0).get("count(ID)"));
+                wordDao.countWordsBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()));
         attr.addFlashAttribute("countSphereCheckedWords",
-                jdbc.queryForList(
-                        "SELECT count(checked) FROM word where subject_number=? AND sphere_number=? AND checked=true ",
-                        subjectNumber, sphereNumber).get(0).get("count(checked)"));
-
-        attr.addFlashAttribute("subjectNumber", subjectNumber);
-        attr.addFlashAttribute("sphereNumber", sphereNumber);
-        attr.addFlashAttribute("wordNumber", wordNumber);
-        attr.addFlashAttribute("spheres", spheres);
+                wordDao.countWordsByAndSubjectNumberSphereNumberChecked(form.getSubjectNumber(), form.getSubjectNumber(),true));
+        attr.addFlashAttribute("currentSubject", subjectDao.findSubjectByNumber(form.getSubjectNumber()).getName());
+        attr.addFlashAttribute("currentSphere",
+                sphereDao.findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()).getName());
+        attr.addFlashAttribute("currentWord",
+                wordDao.findCurrentWord(form.getWordNumber()));
+        attr.addFlashAttribute("subjectNumber", form.getSubjectNumber());
+        attr.addFlashAttribute("sphereNumber", form.getSphereNumber());
+        attr.addFlashAttribute("wordNumber", form.getWordNumber());
+        attr.addFlashAttribute("subjects", subjectDao.findAll());
+        attr.addFlashAttribute("spheres", sphereDao.findSphereBySubjectNumber(form.getSubjectNumber()));
         attr.addFlashAttribute("words", words);
         attr.addFlashAttribute("means", means);
-        // attr.addFlashAttribute("mean",
-        // jdbc.queryForList(
-        // "SELECT * FROM word WHERE name IS NOT NULL AND subject_number=? AND
-        // sphere_number=? AND id=?",
-        // subjectNumber, sphereNumber, wordNumber).get(0).get("mean"));
 
         return "redirect:/memory-kun";
     }
 
     @PostMapping("/display/mean")
-    public String displayMean(Integer subjectNumber, RedirectAttributes attr, Integer sphereNumber, Integer wordNumber,
-            String checked) {
+    public String displayMean(DisplayMeanForm form, RedirectAttributes attr) {
 
-        jdbc.update("UPDATE word set checked=? where id=?", checked, wordNumber);
+        jdbc.update("UPDATE word set checked=? where id=?", form.getChecked(), form.getWordNumber());
 
-        List<Map<String, Object>> words = jdbc.queryForList(
-                "SELECT * FROM word WHERE name IS NOT NULL AND subject_number=? AND sphere_number=?", subjectNumber,
-                sphereNumber);
-        List<Map<String, Object>> spheres = jdbc
-                .queryForList("SELECT * FROM sphere WHERE name IS NOT NULL AND subject_number=?", subjectNumber);
+        List<Word> means = wordDao.findMean(form.getWordNumber());
 
-        List<Map<String, Object>> means = jdbc.queryForList("SELECT * FROM word WHERE id=?", wordNumber);
-
-        attr.addFlashAttribute("countAllWords",
-                jdbc.queryForList("SELECT count(id) FROM word where subject_number=?", subjectNumber).get(0)
-                        .get("count(ID)"));
-        attr.addFlashAttribute("countCheckedWords", jdbc
-                .queryForList("SELECT count(checked) FROM word where subject_number=? AND checked=true ", subjectNumber)
-                .get(0).get("count(checked)"));
+        attr.addFlashAttribute("countAllWords", wordDao.countWordsBySubjectNumber(form.getSubjectNumber()));
+        attr.addFlashAttribute("countCheckedWords", wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
         attr.addFlashAttribute("countSphereWords",
-                jdbc.queryForList("SELECT count(id) FROM word where subject_number=? AND sphere_number=?",
-                        subjectNumber, sphereNumber).get(0).get("count(ID)"));
-
+                wordDao.countWordsBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()));
         attr.addFlashAttribute("countSphereCheckedWords",
-                jdbc.queryForList(
-                        "SELECT count(checked) FROM word where subject_number=? AND sphere_number=? AND checked=true ",
-                        subjectNumber, sphereNumber).get(0).get("count(checked)"));
+                wordDao.countWordsByAndSubjectNumberSphereNumberChecked(form.getSubjectNumber(), form.getSubjectNumber(),true));
+        attr.addFlashAttribute("currentSubject", subjectDao.findSubjectByNumber(form.getSubjectNumber()).getName());
+        attr.addFlashAttribute("currentSphere",
+                sphereDao.findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()).getName());
         attr.addFlashAttribute("currentWord",
-                jdbc.queryForList("SELECT * FROM word WHERE id=?", wordNumber).get(0).get("name"));
-        attr.addFlashAttribute("currentSphere", jdbc
-                .queryForList("SELECT * FROM sphere WHERE subject_number = ? AND number=?", subjectNumber, sphereNumber)
-                .get(0).get("name"));
-        attr.addFlashAttribute("currentSubject",
-                jdbc.queryForList("SELECT * FROM subject WHERE number = ?", subjectNumber).get(0).get("name"));
+                wordDao.findCurrentWord(form.getWordNumber()));
+        attr.addFlashAttribute("sphereNumber", form.getSphereNumber());
+        attr.addFlashAttribute("subjectNumber", form.getSubjectNumber());
+        attr.addFlashAttribute("sphereNumber", form.getSphereNumber());
+        attr.addFlashAttribute("wordNumber", form.getWordNumber());
+        attr.addFlashAttribute("checked", form.getChecked());
+        attr.addFlashAttribute("subjects", subjectDao.findAll());
+        attr.addFlashAttribute("spheres", sphereDao.findSphereBySubjectNumber(form.getSubjectNumber()));
+        attr.addFlashAttribute("words", wordDao.findWord(form.getSubjectNumber(), form.getSphereNumber()));
         attr.addFlashAttribute("means", means);
-        attr.addFlashAttribute("spheres", spheres);
-        attr.addFlashAttribute("sphereNumber", sphereNumber);
-        attr.addFlashAttribute("words", words);
-        attr.addFlashAttribute("subjectNumber", subjectNumber);
-        attr.addFlashAttribute("sphereNumber", sphereNumber);
-        attr.addFlashAttribute("wordNumber", wordNumber);
-        attr.addFlashAttribute("checked", checked);
-
-        // attr.addFlashAttribute("mean",
-        // jdbc.queryForList(
-        // "SELECT * FROM word WHERE name IS NOT NULL AND subject_number=? AND
-        // sphere_number=? AND id=?",
-        // subjectNumber, sphereNumber, wordNumber).get(0).get("mean"));
 
         return "redirect:/memory-kun";
     }
 
     @PostMapping("/curent/subject")
-    public String currentSubject(int subjectNumber, RedirectAttributes attr) {
+    public String currentSubject(CurrentSubjectForm form, RedirectAttributes attr) {
 
-        attr.addFlashAttribute("currentSubject",
-                jdbc.queryForList("SELECT * FROM subject WHERE number = ?", subjectNumber).get(0).get("name"));
-
-        attr.addFlashAttribute("countAllWords",
-                jdbc.queryForList("SELECT count(id) FROM word where subject_number=?", subjectNumber).get(0)
-                        .get("count(ID)"));
-        attr.addFlashAttribute("countCheckedWords", jdbc
-                .queryForList("SELECT count(checked) FROM word where subject_number=? AND checked=true ", subjectNumber)
-                .get(0).get("count(checked)"));
-
-        attr.addFlashAttribute("subjectNumber", subjectNumber);
+        attr.addFlashAttribute("countAllWords", wordDao.countWordsBySubjectNumber(form.getSubjectNumber()));
+        attr.addFlashAttribute("countCheckedWords", wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
+        attr.addFlashAttribute("currentSubject", subjectDao.findSubjectByNumber(form.getSubjectNumber()).getName());
+        attr.addFlashAttribute("subjectNumber", form.getSubjectNumber());
+        
         return "redirect:/memory-kun";
+
     }
 
     @PostMapping("/curent/sphere")
-    public String currentSphere(int subjectNumber, int sphereNumber, RedirectAttributes attr) {
-
-        attr.addFlashAttribute("currentSphere", jdbc
-                .queryForList("SELECT * FROM sphere WHERE subject_number = ? AND number=?", subjectNumber, sphereNumber)
-                .get(0).get("name"));
+    public String currentSphere(CurrentSphereForm form, RedirectAttributes attr) {
 
         attr.addFlashAttribute("countSphereWords",
-                jdbc.queryForList("SELECT count(id) FROM word where subject_number=? AND sphere_number=?",
-                        subjectNumber, sphereNumber).get(0).get("count(ID)"));
-
+                wordDao.countWordsBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()));
         attr.addFlashAttribute("countSphereCheckedWords",
-                jdbc.queryForList(
-                        "SELECT count(checked) FROM word where subject_number=? AND sphere_number=? AND checked=true ",
-                        subjectNumber, sphereNumber).get(0).get("count(checked)"));
-
-        attr.addFlashAttribute("text",
-                jdbc.queryForList(
-                        "SELECT count(checked) FROM word where subject_number=? AND sphere_number=? AND checked=true ",
-                        subjectNumber, sphereNumber).get(0).get("count(checked)") + "/"
-                        + jdbc.queryForList("SELECT count(id) FROM word where subject_number=? AND sphere_number=?",
-                                subjectNumber, sphereNumber).get(0).get("count(ID)"));
-
-        attr.addFlashAttribute("subjectNumber", subjectNumber);
-        attr.addFlashAttribute("sphereNumber", sphereNumber);
+                wordDao.countWordsByAndSubjectNumberSphereNumberChecked(form.getSubjectNumber(), form.getSubjectNumber(),true));
+        attr.addFlashAttribute("currentSphere",
+                sphereDao.findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()).getName());
+        attr.addFlashAttribute("subjectNumber", form.getSubjectNumber());
+        attr.addFlashAttribute("sphereNumber", form.getSphereNumber());
+        
         return "redirect:/memory-kun";
+
     }
 
     @PostMapping("/curent/word")
-    public String currentWord(int subjectNumber, int sphereNumber, String wordNumber, RedirectAttributes attr) {
-
+    public String currentWord(CurrentWordForm form, RedirectAttributes attr) {
         attr.addFlashAttribute("currentWord",
-                jdbc.queryForList("SELECT * FROM word WHERE name=?", wordNumber).get(0).get("name"));
+                wordDao.findCurrentWord(form.getWordNumber()));
+        
         return "redirect:/memory-kun";
+
     }
 
 }
