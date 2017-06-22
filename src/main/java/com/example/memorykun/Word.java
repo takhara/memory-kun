@@ -10,5 +10,6 @@ public class Word {
     private String mean;
     private int subject_number;
     private int sphere_number;
-    
+    private boolean checked;
+
 }

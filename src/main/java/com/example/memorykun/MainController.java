@@ -13,9 +13,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller // クラス
 public class MainController {
-@Autowired
-private JdbcTemplate jdbc;
-    
+    @Autowired
+    private JdbcTemplate jdbc;
+
     @GetMapping("/memory-kun")
     public String hello(Model model) {
         model.addAttribute("subjects", jdbc.queryForList("SELECT * FROM subject WHERE name IS NOT null"));
@@ -25,18 +25,18 @@ private JdbcTemplate jdbc;
 
     @Autowired
     private SubjectDao subjectDao;
-    
+
     @Autowired
     private SphereDao sphereDao;
-    
+
     @Autowired
     private WordDao wordDao;
-    
+
     int count = 1;
 
     @PostMapping("/update/subject") /* HTML 14 (th:action="@{/form})、メソッド */
     public String updateSubject(UpdateSubjectForm form, RedirectAttributes attr) {
-        
+
         int size = 0;
         for (int i = 1; i <= 5; i++) {
             if (subjectDao.findSubjectByNumber(i).getName() == null) {
@@ -44,7 +44,7 @@ private JdbcTemplate jdbc;
                 break;
             }
         }
-        
+
         subjectDao.UpdateSubject(form.getSubjectName(), size);
         List<Subject> subjects = subjectDao.findAll();
         attr.addFlashAttribute("subjects", subjects);
@@ -58,9 +58,9 @@ private JdbcTemplate jdbc;
         List<Sphere> spheres = sphereDao.findSphereBySubjectNumber(form.getSubjectNumber());
 
         attr.addFlashAttribute("countAllWords", wordDao.countWordsBySubjectNumber(form.getSubjectNumber()));
-        attr.addFlashAttribute("countCheckedWords", wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
-        attr.addFlashAttribute("currentSubject",
-                subjectDao.findSubjectByNumber(form.getSubjectNumber()).getName());
+        attr.addFlashAttribute("countCheckedWords",
+                wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
+        attr.addFlashAttribute("currentSubject", subjectDao.findSubjectByNumber(form.getSubjectNumber()).getName());
         attr.addFlashAttribute("subjectNumber", form.getSubjectNumber());
         attr.addFlashAttribute("spheres", spheres);
 
@@ -72,7 +72,8 @@ private JdbcTemplate jdbc;
 
         int size = 0;
         for (int i = 1; i <= 10; i++) {
-            if (sphereDao.findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), i).getName() == null) {
+            if (sphereDao.findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), i)
+                    .getName() == null) {
                 size = i;
                 break;
             }
@@ -83,7 +84,8 @@ private JdbcTemplate jdbc;
         List<Sphere> spheres = sphereDao.findSphereBySubjectNumber(form.getSubjectNumber());
 
         attr.addFlashAttribute("countAllWords", wordDao.countWordsBySubjectNumber(form.getSubjectNumber()));
-        attr.addFlashAttribute("countCheckedWords", wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
+        attr.addFlashAttribute("countCheckedWords",
+                wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
         attr.addFlashAttribute("currentSubject", subjectDao.findSubjectByNumber(form.getSubjectNumber()).getName());
         attr.addFlashAttribute("subjectNumber", form.getSubjectNumber());
         attr.addFlashAttribute("subjects", subjectDao.findAll());
@@ -97,17 +99,19 @@ private JdbcTemplate jdbc;
 
         List<Sphere> spheres = sphereDao.findSphereBySubjectNumber(form.getSubjectNumber());
 
-        List<Word> words = wordDao.findWord(form.getSubjectNumber(), form.getSphereNumber());
+        List<Word> words = wordDao.findWordBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber());
 
         attr.addFlashAttribute("countAllWords", wordDao.countWordsBySubjectNumber(form.getSubjectNumber()));
-        attr.addFlashAttribute("countCheckedWords", wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
+        attr.addFlashAttribute("countCheckedWords",
+                wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
         attr.addFlashAttribute("countSphereWords",
                 wordDao.countWordsBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()));
-        attr.addFlashAttribute("countSphereCheckedWords",
-                wordDao.countWordsByAndSubjectNumberSphereNumberChecked(form.getSubjectNumber(), form.getSubjectNumber(),true));
+        attr.addFlashAttribute("countSphereCheckedWords", wordDao.countWordsByAndSubjectNumberSphereNumberChecked(
+                form.getSubjectNumber(), form.getSphereNumber(), true));
         attr.addFlashAttribute("currentSubject", subjectDao.findSubjectByNumber(form.getSubjectNumber()).getName());
-        attr.addFlashAttribute("currentSphere",
-                sphereDao.findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()).getName());
+        attr.addFlashAttribute("currentSphere", sphereDao
+                .findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber())
+                .getName());
         attr.addFlashAttribute("spheres", spheres);
         attr.addFlashAttribute("words", words);
         attr.addFlashAttribute("subjectNumber", form.getSubjectNumber());
@@ -125,17 +129,19 @@ private JdbcTemplate jdbc;
             break;
         }
 
-        List<Word> words = wordDao.findWord(form.getSubjectNumber(), form.getSphereNumber());
+        List<Word> words = wordDao.findWordBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber());
 
         attr.addFlashAttribute("countAllWords", wordDao.countWordsBySubjectNumber(form.getSubjectNumber()));
-        attr.addFlashAttribute("countCheckedWords", wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
+        attr.addFlashAttribute("countCheckedWords",
+                wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
         attr.addFlashAttribute("countSphereWords",
                 wordDao.countWordsBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()));
-        attr.addFlashAttribute("countSphereCheckedWords",
-                wordDao.countWordsByAndSubjectNumberSphereNumberChecked(form.getSubjectNumber(), form.getSubjectNumber(),true));
+        attr.addFlashAttribute("countSphereCheckedWords", wordDao.countWordsByAndSubjectNumberSphereNumberChecked(
+                form.getSubjectNumber(), form.getSphereNumber(), true));
         attr.addFlashAttribute("currentSubject", subjectDao.findSubjectByNumber(form.getSubjectNumber()).getName());
-        attr.addFlashAttribute("currentSphere",
-                sphereDao.findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()).getName());
+        attr.addFlashAttribute("currentSphere", sphereDao
+                .findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber())
+                .getName());
         attr.addFlashAttribute("subjectNumber", form.getSubjectNumber());
         attr.addFlashAttribute("sphereNumber", form.getSphereNumber());
         attr.addFlashAttribute("subjects", subjectDao.findAll());
@@ -150,21 +156,22 @@ private JdbcTemplate jdbc;
 
         wordDao.updateMean(form.getMean(), form.getWordNumber());
 
-        List<Word> words = wordDao.findWord(form.getSubjectNumber(), form.getSphereNumber());
+        List<Word> words = wordDao.findWordBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber());
 
-        List<Word> means = wordDao.findMean(form.getWordNumber());
-        
+        List<Word> means = wordDao.findMeanByWordNumber(form.getWordNumber());
+
         attr.addFlashAttribute("countAllWords", wordDao.countWordsBySubjectNumber(form.getSubjectNumber()));
-        attr.addFlashAttribute("countCheckedWords", wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
+        attr.addFlashAttribute("countCheckedWords",
+                wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
         attr.addFlashAttribute("countSphereWords",
                 wordDao.countWordsBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()));
-        attr.addFlashAttribute("countSphereCheckedWords",
-                wordDao.countWordsByAndSubjectNumberSphereNumberChecked(form.getSubjectNumber(), form.getSubjectNumber(),true));
+        attr.addFlashAttribute("countSphereCheckedWords", wordDao.countWordsByAndSubjectNumberSphereNumberChecked(
+                form.getSubjectNumber(), form.getSphereNumber(), true));
         attr.addFlashAttribute("currentSubject", subjectDao.findSubjectByNumber(form.getSubjectNumber()).getName());
-        attr.addFlashAttribute("currentSphere",
-                sphereDao.findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()).getName());
-        attr.addFlashAttribute("currentWord",
-                wordDao.findCurrentWord(form.getWordNumber()));
+        attr.addFlashAttribute("currentSphere", sphereDao
+                .findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber())
+                .getName());
+        attr.addFlashAttribute("currentWord", wordDao.findCurrentWordByWordNumber(form.getWordNumber()).getName());
         attr.addFlashAttribute("subjectNumber", form.getSubjectNumber());
         attr.addFlashAttribute("sphereNumber", form.getSphereNumber());
         attr.addFlashAttribute("wordNumber", form.getWordNumber());
@@ -179,21 +186,22 @@ private JdbcTemplate jdbc;
     @PostMapping("/to/mean")
     public String toMean(ToMeanForm form, RedirectAttributes attr) {
 
-        List<Word> means = wordDao.findMean(form.getWordNumber());
+        List<Word> means = wordDao.findMeanByWordNumber(form.getWordNumber());
 
-        List<Word> words = wordDao.findWord(form.getSubjectNumber(), form.getSphereNumber());
+        List<Word> words = wordDao.findWordBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber());
 
         attr.addFlashAttribute("countAllWords", wordDao.countWordsBySubjectNumber(form.getSubjectNumber()));
-        attr.addFlashAttribute("countCheckedWords", wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
+        attr.addFlashAttribute("countCheckedWords",
+                wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
         attr.addFlashAttribute("countSphereWords",
                 wordDao.countWordsBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()));
-        attr.addFlashAttribute("countSphereCheckedWords",
-                wordDao.countWordsByAndSubjectNumberSphereNumberChecked(form.getSubjectNumber(), form.getSubjectNumber(),true));
+        attr.addFlashAttribute("countSphereCheckedWords", wordDao.countWordsByAndSubjectNumberSphereNumberChecked(
+                form.getSubjectNumber(), form.getSphereNumber(), true));
         attr.addFlashAttribute("currentSubject", subjectDao.findSubjectByNumber(form.getSubjectNumber()).getName());
-        attr.addFlashAttribute("currentSphere",
-                sphereDao.findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()).getName());
-        attr.addFlashAttribute("currentWord",
-                wordDao.findCurrentWord(form.getWordNumber()));
+        attr.addFlashAttribute("currentSphere", sphereDao
+                .findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber())
+                .getName());
+        attr.addFlashAttribute("currentWord", wordDao.findCurrentWordByWordNumber(form.getWordNumber()).getName());
         attr.addFlashAttribute("subjectNumber", form.getSubjectNumber());
         attr.addFlashAttribute("sphereNumber", form.getSphereNumber());
         attr.addFlashAttribute("wordNumber", form.getWordNumber());
@@ -208,21 +216,22 @@ private JdbcTemplate jdbc;
     @PostMapping("/display/mean")
     public String displayMean(DisplayMeanForm form, RedirectAttributes attr) {
 
-        jdbc.update("UPDATE word set checked=? where id=?", form.getChecked(), form.getWordNumber());
+        wordDao.updateChecked(form.getChecked(), form.getWordNumber());
 
-        List<Word> means = wordDao.findMean(form.getWordNumber());
+        List<Word> means = wordDao.findMeanByWordNumber(form.getWordNumber());
 
         attr.addFlashAttribute("countAllWords", wordDao.countWordsBySubjectNumber(form.getSubjectNumber()));
-        attr.addFlashAttribute("countCheckedWords", wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
+        attr.addFlashAttribute("countCheckedWords",
+                wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
         attr.addFlashAttribute("countSphereWords",
                 wordDao.countWordsBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()));
-        attr.addFlashAttribute("countSphereCheckedWords",
-                wordDao.countWordsByAndSubjectNumberSphereNumberChecked(form.getSubjectNumber(), form.getSubjectNumber(),true));
+        attr.addFlashAttribute("countSphereCheckedWords", wordDao.countWordsByAndSubjectNumberSphereNumberChecked(
+                form.getSubjectNumber(), form.getSphereNumber(), true));
         attr.addFlashAttribute("currentSubject", subjectDao.findSubjectByNumber(form.getSubjectNumber()).getName());
-        attr.addFlashAttribute("currentSphere",
-                sphereDao.findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()).getName());
-        attr.addFlashAttribute("currentWord",
-                wordDao.findCurrentWord(form.getWordNumber()));
+        attr.addFlashAttribute("currentSphere", sphereDao
+                .findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber())
+                .getName());
+        attr.addFlashAttribute("currentWord", wordDao.findCurrentWordByWordNumber(form.getWordNumber()).getName());
         attr.addFlashAttribute("sphereNumber", form.getSphereNumber());
         attr.addFlashAttribute("subjectNumber", form.getSubjectNumber());
         attr.addFlashAttribute("sphereNumber", form.getSphereNumber());
@@ -230,7 +239,7 @@ private JdbcTemplate jdbc;
         attr.addFlashAttribute("checked", form.getChecked());
         attr.addFlashAttribute("subjects", subjectDao.findAll());
         attr.addFlashAttribute("spheres", sphereDao.findSphereBySubjectNumber(form.getSubjectNumber()));
-        attr.addFlashAttribute("words", wordDao.findWord(form.getSubjectNumber(), form.getSphereNumber()));
+        attr.addFlashAttribute("words", wordDao.findWordBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()));
         attr.addFlashAttribute("means", means);
 
         return "redirect:/memory-kun";
@@ -240,10 +249,11 @@ private JdbcTemplate jdbc;
     public String currentSubject(CurrentSubjectForm form, RedirectAttributes attr) {
 
         attr.addFlashAttribute("countAllWords", wordDao.countWordsBySubjectNumber(form.getSubjectNumber()));
-        attr.addFlashAttribute("countCheckedWords", wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
+        attr.addFlashAttribute("countCheckedWords",
+                wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
         attr.addFlashAttribute("currentSubject", subjectDao.findSubjectByNumber(form.getSubjectNumber()).getName());
         attr.addFlashAttribute("subjectNumber", form.getSubjectNumber());
-        
+
         return "redirect:/memory-kun";
 
     }
@@ -253,22 +263,22 @@ private JdbcTemplate jdbc;
 
         attr.addFlashAttribute("countSphereWords",
                 wordDao.countWordsBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()));
-        attr.addFlashAttribute("countSphereCheckedWords",
-                wordDao.countWordsByAndSubjectNumberSphereNumberChecked(form.getSubjectNumber(), form.getSubjectNumber(),true));
-        attr.addFlashAttribute("currentSphere",
-                sphereDao.findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()).getName());
+        attr.addFlashAttribute("countSphereCheckedWords", wordDao.countWordsByAndSubjectNumberSphereNumberChecked(
+                form.getSubjectNumber(), form.getSphereNumber(), true));
+        attr.addFlashAttribute("currentSphere", sphereDao
+                .findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber())
+                .getName());
         attr.addFlashAttribute("subjectNumber", form.getSubjectNumber());
         attr.addFlashAttribute("sphereNumber", form.getSphereNumber());
-        
+
         return "redirect:/memory-kun";
 
     }
 
     @PostMapping("/curent/word")
     public String currentWord(CurrentWordForm form, RedirectAttributes attr) {
-        attr.addFlashAttribute("currentWord",
-                wordDao.findCurrentWord(form.getWordNumber()));
-        
+        attr.addFlashAttribute("currentWord", wordDao.findCurrentWordByWordNumber(form.getWordNumber()).getName());
+
         return "redirect:/memory-kun";
 
     }

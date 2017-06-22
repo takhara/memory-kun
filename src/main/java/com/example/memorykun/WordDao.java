@@ -13,10 +13,10 @@ public class WordDao {
     @Autowired
     private JdbcTemplate jdbc;
     
-    public List<Word> findWord(int subjectNumber, int sphereNumber){
+    public List<Word> findWordBySubjectNumberAndSphereNumber(int subjectNumber, int sphereNumber){
         return jdbc.query("SELECT * FROM word WHERE subject_number=? AND sphere_number=? Order by id ASC", new BeanPropertyRowMapper<>(Word.class),subjectNumber,sphereNumber);
     }
-    public Word findCurrentWord(int wordNumber){
+    public Word findCurrentWordByWordNumber(int wordNumber){
         return jdbc.queryForObject("SELECT * FROM word WHERE id=?", new BeanPropertyRowMapper<>(Word.class),wordNumber);
     }
     
@@ -34,7 +34,7 @@ public class WordDao {
     }
     
     public int countWordsByAndSubjectNumberSphereNumberChecked(int subjectNumber, int sphereNumber, boolean checked){
-        return jdbc.queryForObject("SELECT count(checked) FROM word where subject_number=? AND sphere_number=? AND checked = ?", Integer.class, subjectNumber, sphereNumber,checked);
+        return jdbc.queryForObject("SELECT count(id) FROM word where subject_number=? AND sphere_number=? AND checked = ?", Integer.class, subjectNumber, sphereNumber,checked);
     }
     
     public void insertWord(String name, int count, int subjectNumber, int sphereNumber){
@@ -46,8 +46,11 @@ public class WordDao {
          jdbc.update("UPDATE word set mean=? where id=?",mean, wordNumber);
     }
     
-    public List<Word> findMean(int wordNumber){
+    public List<Word> findMeanByWordNumber(int wordNumber){
         return jdbc.query("SELECT * FROM word WHERE id=?", new BeanPropertyRowMapper<>(Word.class), wordNumber);
     }
     
+    public void updateChecked(String checked, int wordNumber){
+        jdbc.update("UPDATE word set checked=? where id=?", checked, wordNumber);
+    }
 }
