@@ -1,7 +1,6 @@
 package com.example.memorykun;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -99,7 +98,8 @@ public class MainController {
 
         List<Sphere> spheres = sphereDao.findSphereBySubjectNumber(form.getSubjectNumber());
 
-        List<Word> words = wordDao.findWordBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber());
+        List<Word> words = wordDao.findWordBySubjectNumberAndSphereNumber(form.getSubjectNumber(),
+                form.getSphereNumber());
 
         attr.addFlashAttribute("countAllWords", wordDao.countWordsBySubjectNumber(form.getSubjectNumber()));
         attr.addFlashAttribute("countCheckedWords",
@@ -123,13 +123,11 @@ public class MainController {
     @PostMapping("/update/word")
     public String updateWord(UpdateWordForm form, RedirectAttributes attr) {
 
-        for (int i = 1; i <= 100; i++) {
-            wordDao.insertWord(form.getWordName(), count, form.getSubjectNumber(), form.getSphereNumber());
-            count += 1;
-            break;
-        }
+        wordDao.insertWord(form.getWordName(), count, form.getSubjectNumber(), form.getSphereNumber());
+        count += 1;
 
-        List<Word> words = wordDao.findWordBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber());
+        List<Word> words = wordDao.findWordBySubjectNumberAndSphereNumber(form.getSubjectNumber(),
+                form.getSphereNumber());
 
         attr.addFlashAttribute("countAllWords", wordDao.countWordsBySubjectNumber(form.getSubjectNumber()));
         attr.addFlashAttribute("countCheckedWords",
@@ -156,7 +154,8 @@ public class MainController {
 
         wordDao.updateMean(form.getMean(), form.getWordNumber());
 
-        List<Word> words = wordDao.findWordBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber());
+        List<Word> words = wordDao.findWordBySubjectNumberAndSphereNumber(form.getSubjectNumber(),
+                form.getSphereNumber());
 
         List<Word> means = wordDao.findMeanByWordNumber(form.getWordNumber());
 
@@ -188,7 +187,8 @@ public class MainController {
 
         List<Word> means = wordDao.findMeanByWordNumber(form.getWordNumber());
 
-        List<Word> words = wordDao.findWordBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber());
+        List<Word> words = wordDao.findWordBySubjectNumberAndSphereNumber(form.getSubjectNumber(),
+                form.getSphereNumber());
 
         attr.addFlashAttribute("countAllWords", wordDao.countWordsBySubjectNumber(form.getSubjectNumber()));
         attr.addFlashAttribute("countCheckedWords",
@@ -239,7 +239,8 @@ public class MainController {
         attr.addFlashAttribute("checked", form.getChecked());
         attr.addFlashAttribute("subjects", subjectDao.findAll());
         attr.addFlashAttribute("spheres", sphereDao.findSphereBySubjectNumber(form.getSubjectNumber()));
-        attr.addFlashAttribute("words", wordDao.findWordBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()));
+        attr.addFlashAttribute("words",
+                wordDao.findWordBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()));
         attr.addFlashAttribute("means", means);
 
         return "redirect:/memory-kun";
