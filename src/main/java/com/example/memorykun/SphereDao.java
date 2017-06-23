@@ -24,7 +24,11 @@ public class SphereDao {
          jdbc.update("UPDATE sphere set name=? where number=? AND name IS NULL AND subject_number=?", sphereName,sphereNumber,subjectNumber);
     }
     
-    public void deleteSphere(Integer subjectNumber,Integer sphereNumber ){
+    public void deleteSphereBySubjectNumber(Integer subjectNumber){
+        jdbc.update("UPDATE sphere set name=NULL where subject_number=? ", subjectNumber);
+   }
+    
+    public void deleteSphereBySubjectNumberAndSphereNumber(Integer subjectNumber,Integer sphereNumber ){
         jdbc.update("UPDATE sphere set name=NULL where subject_number=? AND number=?", subjectNumber, sphereNumber);
    }
 

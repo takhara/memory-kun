@@ -250,7 +250,7 @@ public class MainController {
     public String currentSubject(CurrentSubjectForm form, RedirectAttributes attr) {
 
         subjectDao.deleteSubject(form.getDeleteSubject());
-        sphereDao.deleteSphere(form.getSubjectNumber(), form.getDeleteSubject());
+        sphereDao.deleteSphereBySubjectNumber(form.getSubjectNumber());
         wordDao.deleteWordBySubjectNumber(form.getSubjectNumber());
 
         attr.addFlashAttribute("countAllWords", wordDao.countWordsBySubjectNumber(form.getSubjectNumber()));
@@ -271,7 +271,7 @@ public class MainController {
     @PostMapping("/current/sphere")
     public String currentSphere(CurrentSphereForm form, RedirectAttributes attr) {
 
-        sphereDao.deleteSphere(form.getSubjectNumber(), form.getDeleteSphere());
+        sphereDao.deleteSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getDeleteSphere());
         wordDao.deleteWordBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber());
 
         attr.addFlashAttribute("countSphereWords",
