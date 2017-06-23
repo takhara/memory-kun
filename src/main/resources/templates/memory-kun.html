@@ -107,11 +107,13 @@ height: 300px;
           </th>
           <th class="col-lg-3">
             <div  align="center">
-              <form method="post" th:action="@{/current/subject}">
+              <form method="post" th:action="@{/current/subject}" class="form-inline">
                 <h3>
                 <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
-                <span th:text="${currentSubject}"></span><br />
-                <small>
+                <span th:text="${currentSubject}"></span>
+                <button th:if="${currentSubject} != null" type="submit" style="display:block" name="deleteSubject" th:value="${subjectNumber}" class="btn btn-default btn-xs">削除</button>
+                <button th:if="${currentSubject} == null" type="submit" style="display:none" name="deleteSubject" th:value="${subjectNumber}" class="btn btn-default btn-xs">削除</button>
+                <small><br/>
                   <span th:if="${currentSubject} != null" style="display:block">科目達成度
                     <span th:text="${countCheckedWords}"></span>/<span th:text="${countAllWords}"></span>
                   </span>
@@ -122,12 +124,13 @@ height: 300px;
           </th>
           <th class="col-lg-3">
             <div align="center">
-              <form method="post" th:action="@{/current/sphere}">
+              <form method="post" th:action="@{/current/sphere}" class="form-inline">
                 <h3>
                 <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
                 <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
-                  <span th:text="${currentSphere}"></span><br />
-                  <small>
+                  <span th:text="${currentSphere}"></span>
+                  <button th:if="${currentSphere} != null" type="submit" style="display:block" name="deleteSphere" th:value="${sphereNumber}" class="btn btn-default btn-xs">削除</button>
+                  <small><br/>
                     <span th:if="${currentSphere} != null" style="display:block">範囲別達成度
                       <span th:text="${countSphereCheckedWords}"></span>/<span th:text="${countSphereWords}"></span>
                     </span>
@@ -144,6 +147,7 @@ height: 300px;
                   <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
                   <input type="hidden" name="wordNumber" th:value="${wordNumber}" />
                   <span th:text="${currentWord}"></span>
+                  <button th:if="${currentWord} != null" type="submit" style="display:block" name="deleteWord" th:value="${wordNumber}" class="btn btn-default btn-xs">削除</button>
                   </h3>
                 </form>
               </div>

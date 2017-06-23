@@ -7,4 +7,5 @@ import lombok.Data;
 public class CurrentSubjectForm {
 
     private Integer subjectNumber;
+    private Integer deleteSubject;
 }

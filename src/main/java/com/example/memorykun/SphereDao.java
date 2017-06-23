@@ -20,10 +20,13 @@ public class SphereDao {
         return jdbc.queryForObject("SELECT * FROM sphere WHERE subject_number = ? AND number=?", new BeanPropertyRowMapper<>(Sphere.class),subjectNumber,sphereNumber);
     } 
 
-    public void UpdateSphere(String sphereName, Integer sphereNumber,Integer subjectNumber ){
+    public void updateSphere(String sphereName, Integer sphereNumber,Integer subjectNumber ){
          jdbc.update("UPDATE sphere set name=? where number=? AND name IS NULL AND subject_number=?", sphereName,sphereNumber,subjectNumber);
     }
     
+    public void deleteSphere(Integer subjectNumber,Integer sphereNumber ){
+        jdbc.update("UPDATE sphere set name=NULL where subject_number=? AND number=?", subjectNumber, sphereNumber);
+   }
 
 
     

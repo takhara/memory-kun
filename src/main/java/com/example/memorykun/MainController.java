@@ -44,7 +44,7 @@ public class MainController {
             }
         }
 
-        subjectDao.UpdateSubject(form.getSubjectName(), size);
+        subjectDao.updateSubject(form.getSubjectName(), size);
         List<Subject> subjects = subjectDao.findAll();
         attr.addFlashAttribute("subjects", subjects);
 
@@ -78,7 +78,7 @@ public class MainController {
             }
         }
 
-        sphereDao.UpdateSphere(form.getSphereName(), size, form.getSubjectNumber());
+        sphereDao.updateSphere(form.getSphereName(), size, form.getSubjectNumber());
 
         List<Sphere> spheres = sphereDao.findSphereBySubjectNumber(form.getSubjectNumber());
 
@@ -246,39 +246,86 @@ public class MainController {
         return "redirect:/memory-kun";
     }
 
-    @PostMapping("/curent/subject")
+    @PostMapping("/current/subject")
     public String currentSubject(CurrentSubjectForm form, RedirectAttributes attr) {
+
+        subjectDao.deleteSubject(form.getDeleteSubject());
+        sphereDao.deleteSphere(form.getSubjectNumber(), form.getDeleteSubject());
+        wordDao.deleteWordBySubjectNumber(form.getSubjectNumber());
 
         attr.addFlashAttribute("countAllWords", wordDao.countWordsBySubjectNumber(form.getSubjectNumber()));
         attr.addFlashAttribute("countCheckedWords",
                 wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
-        attr.addFlashAttribute("currentSubject", subjectDao.findSubjectByNumber(form.getSubjectNumber()).getName());
-        attr.addFlashAttribute("subjectNumber", form.getSubjectNumber());
+
+        if (subjectDao.findSubjectByNumber(form.getSubjectNumber()).getName() == null) {
+            return "redirect:/memory-kun";
+        } else {
+            attr.addFlashAttribute("currentSubject", subjectDao.findSubjectByNumber(form.getSubjectNumber()).getName());
+            attr.addFlashAttribute("subjectNumber", form.getSubjectNumber());
+        }
 
         return "redirect:/memory-kun";
 
     }
 
-    @PostMapping("/curent/sphere")
+    @PostMapping("/current/sphere")
     public String currentSphere(CurrentSphereForm form, RedirectAttributes attr) {
+
+        sphereDao.deleteSphere(form.getSubjectNumber(), form.getDeleteSphere());
+        wordDao.deleteWordBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber());
 
         attr.addFlashAttribute("countSphereWords",
                 wordDao.countWordsBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()));
         attr.addFlashAttribute("countSphereCheckedWords", wordDao.countWordsByAndSubjectNumberSphereNumberChecked(
                 form.getSubjectNumber(), form.getSphereNumber(), true));
-        attr.addFlashAttribute("currentSphere", sphereDao
-                .findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber())
-                .getName());
-        attr.addFlashAttribute("subjectNumber", form.getSubjectNumber());
-        attr.addFlashAttribute("sphereNumber", form.getSphereNumber());
+
+        if (sphereDao.findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber())
+                .getName() == null) {
+            attr.addFlashAttribute("spheres", sphereDao.findSphereBySubjectNumber(form.getSubjectNumber()));
+            attr.addFlashAttribute("subjectNumber", form.getSubjectNumber());
+            attr.addFlashAttribute("currentSubject", subjectDao.findSubjectByNumber(form.getSubjectNumber()).getName());
+            attr.addFlashAttribute("countAllWords", wordDao.countWordsBySubjectNumber(form.getSubjectNumber()));
+            attr.addFlashAttribute("countCheckedWords",
+                    wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
+
+            return "redirect:/memory-kun";
+        } else {
+            attr.addFlashAttribute("currentSphere", sphereDao
+                    .findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber())
+                    .getName());
+            attr.addFlashAttribute("subjectNumber", form.getSubjectNumber());
+            attr.addFlashAttribute("sphereNumber", form.getSphereNumber());
+        }
 
         return "redirect:/memory-kun";
 
     }
 
-    @PostMapping("/curent/word")
+    @PostMapping("/current/word")
     public String currentWord(CurrentWordForm form, RedirectAttributes attr) {
-        attr.addFlashAttribute("currentWord", wordDao.findCurrentWordByWordNumber(form.getWordNumber()).getName());
+
+        wordDao.deleteWordById(form.getDeleteWord());
+        if (wordDao.findCurrentWordByWordNumber(form.getWordNumber()).getName() == null) {
+            attr.addFlashAttribute("spheres", sphereDao.findSphereBySubjectNumber(form.getSubjectNumber()));
+            attr.addFlashAttribute("words",
+                    wordDao.findWordBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()));
+            attr.addFlashAttribute("subjectNumber", form.getSubjectNumber());
+            attr.addFlashAttribute("sphereNumber", form.getSphereNumber());
+            attr.addFlashAttribute("currentSubject", subjectDao.findSubjectByNumber(form.getSubjectNumber()).getName());
+            attr.addFlashAttribute("currentSphere", sphereDao
+                    .findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber())
+                    .getName());
+            attr.addFlashAttribute("countAllWords", wordDao.countWordsBySubjectNumber(form.getSubjectNumber()));
+            attr.addFlashAttribute("countCheckedWords",
+                    wordDao.countWordsBySubjectNumberChecked(form.getSubjectNumber(), true));
+            attr.addFlashAttribute("countSphereWords",
+                    wordDao.countWordsBySubjectNumberAndSphereNumber(form.getSubjectNumber(), form.getSphereNumber()));
+            attr.addFlashAttribute("countSphereCheckedWords", wordDao.countWordsByAndSubjectNumberSphereNumberChecked(
+                    form.getSubjectNumber(), form.getSphereNumber(), true));
+            return "redirect:/memory-kun";
+        } else {
+            attr.addFlashAttribute("currentWord", wordDao.findCurrentWordByWordNumber(form.getWordNumber()).getName());
+        }
 
         return "redirect:/memory-kun";
 

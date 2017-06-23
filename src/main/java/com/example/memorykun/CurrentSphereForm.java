@@ -7,5 +7,6 @@ public class CurrentSphereForm {
 
     private Integer subjectNumber;
     private Integer sphereNumber;
+    private Integer deleteSphere;
 
 }

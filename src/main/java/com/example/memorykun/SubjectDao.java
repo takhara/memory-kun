@@ -22,8 +22,11 @@ public class SubjectDao {
                 new BeanPropertyRowMapper<>(Subject.class), subjectNumber);
     }
 
-    public void UpdateSubject(String subjectName, int size){
+    public void updateSubject(String subjectName, int size){
          jdbc.update("UPDATE subject set name=? where number=? And name IS NULL", subjectName,size);
+    }
+    public void deleteSubject(int subjectNumber){
+        jdbc.update("UPDATE subject set name=NULL where number=?", subjectNumber);
     }
     
 }
