@@ -9,3 +9,5 @@ spring:
     username: sa
     password: 
     
+server:
+  port: 8083
