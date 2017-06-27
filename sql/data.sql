@@ -61,6 +61,37 @@ insert into sphere values(58,8,null,5);
 insert into sphere values(59,9,null,5);
 insert into sphere values(60,10,null,5);
 
+insert into countId values(1);
+insert into countId values(2);
+insert into countId values(3);
+insert into countId values(4);
+insert into countId values(5);
+insert into countId values(6);
+insert into countId values(7);
+insert into countId values(8);
+insert into countId values(9);
+insert into countId values(10);
+insert into countId values(11);
+insert into countId values(12);
+insert into countId values(13);
+insert into countId values(14);
+insert into countId values(15);
+insert into countId values(16);
+insert into countId values(17);
+insert into countId values(18);
+insert into countId values(19);
+insert into countId values(20);
+insert into countId values(21);
+insert into countId values(22);
+insert into countId values(23);
+insert into countId values(24);
+insert into countId values(25);
+insert into countId values(26);
+insert into countId values(27);
+insert into countId values(28);
+insert into countId values(29);
+insert into countId values(30);
+
 /*idをfor文で回してデータをupdate句で挿入、subjectにラジオボタンを持たせ、ラジオボタンが押されることでidを返すようにする。
  * 副問い合わせを用いて(select subno from subject where subname=('name'))subnoを挿入
  */

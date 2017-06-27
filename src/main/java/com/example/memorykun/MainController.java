@@ -30,8 +30,11 @@ public class MainController {
 
     @Autowired
     private WordDao wordDao;
-
-    int count = 1;
+    
+    @Autowired
+    private CountIdDao countIdDao;
+    
+int count=40;
 
     @PostMapping("/update/subject") /* HTML 14 (th:action="@{/form})、メソッド */
     public String updateSubject(UpdateSubjectForm form, RedirectAttributes attr) {
@@ -123,8 +126,18 @@ public class MainController {
     @PostMapping("/update/word")
     public String updateWord(UpdateWordForm form, RedirectAttributes attr) {
 
+        /*
+        if(countIdDao.countId() == 0){
+             count = 1;
+        }else{
+            count= countIdDao.countId();
+            count++;
+        }
+        jdbc.update("INSERT INTO countId VALUES(?)",count);
+        */
+        
         wordDao.insertWord(form.getWordName(), count, form.getSubjectNumber(), form.getSphereNumber());
-        count += 1;
+        count+=1;
 
         List<Word> words = wordDao.findWordBySubjectNumberAndSphereNumber(form.getSubjectNumber(),
                 form.getSphereNumber());

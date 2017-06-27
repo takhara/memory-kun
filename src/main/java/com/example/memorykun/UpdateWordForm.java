@@ -9,4 +9,5 @@ public class UpdateWordForm {
     private Integer sphereNumber;
     private String wordName;
     private boolean checked;
+    private int count;
 }
