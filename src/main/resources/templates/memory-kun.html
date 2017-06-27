@@ -72,7 +72,7 @@ height: 400px;
                 <input th:if="${currentSubject} != null" type="text" name="sphereName" placeholder="範囲を入力" required="required" maxlength="20" class="form-control" />
                 <input th:if="${currentSubject} == null" type="text" name="sphereName" placeholder="範囲を入力" required="required" maxlength="20" class="form-control" disabled="disabled" />
                 <input th:if="${currentSubject} != null" type="submit" class="btn btn-success" value="登録" />
-                <input th:if="${currentSubject} == null" type="submit" class="btn btn-success" disabled="disabled" placeholder="登録" />
+                <input th:if="${currentSubject} == null" type="submit" class="btn btn-success" disabled="disabled" value="登録" />
                 <input type="hidden" name="subjectNumber" th:value="${subjectNumber}"  />
               </form>
             </div>
@@ -83,7 +83,7 @@ height: 400px;
                 <input th:if="${currentSphere} != null" type="text" name="wordName" placeholder="単語を入力" required="required" maxlength="30" class="form-control" />
                 <input th:if="${currentSphere} == null" type="text" name="wordName" placeholder="単語を入力" required="required" maxlength="30" class="form-control" disabled="disabled" />
                 <input th:if="${currentSphere} != null" type="submit" class="btn btn-success" value="登録" />
-                <input th:if="${currentSphere} == null" type="submit" class="btn btn-success"  disabled="disabled"  placeholder="登録"/>
+                <input th:if="${currentSphere} == null" type="submit" class="btn btn-success"  disabled="disabled"  value="登録"/>
                 <input type="hidden" name="subjectNumber" th:value="${subjectNumber}" />
                 <input type="hidden" name="sphereNumber" th:value="${sphereNumber}" />
               </form>
@@ -98,7 +98,7 @@ height: 400px;
                 <input th:if="${currentWord} != null" type="text" name="mean" placeholder="意味を入力" required="required" maxlength="150" class="form-control" />
                 <input th:if="${currentWord} == null" type="text" name="mean" placeholder="意味を入力" required="required" maxlength="150" class="form-control" disabled="disabled" />
                 <input th:if="${currentWord} != null" type="submit" class="btn btn-success" value="登録" />
-                <input th:if="${currentWord} == null" type="submit" class="btn btn-success" disabled="disabled" placeholder="登録" />
+                <input th:if="${currentWord} == null" type="submit" class="btn btn-success" disabled="disabled" value="登録" />
               </form>
             </div>
           </th>
