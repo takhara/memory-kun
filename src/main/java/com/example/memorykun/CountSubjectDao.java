@@ -8,16 +8,17 @@ import lombok.Data;
 
 @Data
 @Repository
-public class CountIdDao {
+public class CountSubjectDao {
     @Autowired
     private JdbcTemplate jdbc;
     
-    public int countId(){
-        return jdbc.queryForObject("SELECT MAX(id) FROM countId", Integer.class);
+    public int countSubjectId(){
+        return jdbc.queryForObject("SELECT MAX(id) FROM countSubjectId", Integer.class);
     }
     
-    public void insertWordId(int count){
-        jdbc.update("INSERT INTO countId VALUES(?)", count);
-   }
+    public void insertSubjectId(int count){
+         jdbc.update("INSERT INTO countSubjectId VALUES(?)", count);
+    }
+    
 
 }

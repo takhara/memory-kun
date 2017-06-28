@@ -8,16 +8,15 @@ import lombok.Data;
 
 @Data
 @Repository
-public class CountIdDao {
+public class CountSphereDao {
     @Autowired
     private JdbcTemplate jdbc;
     
-    public int countId(){
-        return jdbc.queryForObject("SELECT MAX(id) FROM countId", Integer.class);
+    public int countSphereId(){
+        return jdbc.queryForObject("SELECT MAX(id) FROM countSphereId", Integer.class);
     }
-    
-    public void insertWordId(int count){
-        jdbc.update("INSERT INTO countId VALUES(?)", count);
+    public void insertSphereId(int count){
+        jdbc.update("INSERT INTO countSphereId VALUES(?)", count);
    }
 
 }

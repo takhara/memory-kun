@@ -17,11 +17,11 @@ public class SphereDao {
         return jdbc.query("SELECT * FROM sphere WHERE subject_number=? AND name IS NOT NULL", new BeanPropertyRowMapper<>(Sphere.class),subjectNumber);
     }
     public Sphere findCurrentSphereBySubjectNumberAndSphereNumber(Integer subjectNumber, Integer sphereNumber){
-        return jdbc.queryForObject("SELECT * FROM sphere WHERE subject_number = ? AND number=?", new BeanPropertyRowMapper<>(Sphere.class),subjectNumber,sphereNumber);
+        return jdbc.queryForObject("SELECT * FROM sphere WHERE subject_number = ? AND id=?", new BeanPropertyRowMapper<>(Sphere.class),subjectNumber,sphereNumber);
     } 
 
     public void updateSphere(String sphereName, Integer sphereNumber,Integer subjectNumber ){
-         jdbc.update("UPDATE sphere set name=? where number=? AND name IS NULL AND subject_number=?", sphereName,sphereNumber,subjectNumber);
+         jdbc.update("UPDATE sphere set name=? where id=? AND name IS NULL AND subject_number=?", sphereName,sphereNumber,subjectNumber);
     }
     
     public void deleteSphereBySubjectNumber(Integer subjectNumber){
@@ -29,10 +29,11 @@ public class SphereDao {
    }
     
     public void deleteSphereBySubjectNumberAndSphereNumber(Integer subjectNumber,Integer sphereNumber ){
-        jdbc.update("UPDATE sphere set name=NULL where subject_number=? AND number=?", subjectNumber, sphereNumber);
+        jdbc.update("UPDATE sphere set name=NULL where subject_number=? AND id=?", subjectNumber, sphereNumber);
    }
 
 
-    
-    
+    public void insertSphere(int id, String sphereName,int subjectNumber){
+        jdbc.update("INSERT INTO sphere VALUES(?,?,?)", id,sphereName,subjectNumber);
+    }
 }

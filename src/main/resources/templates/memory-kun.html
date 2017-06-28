@@ -164,7 +164,7 @@ height: 400px;
                 <div th:each="subject : ${subjects}">
                   <h1>
                   <span th:text="${subject.name}"></span>
-                  <button type="submit" class="btn btn-primary btn-xs" name="subjectNumber" th:value="${subject.number}" >next</button>
+                  <button type="submit" class="btn btn-primary btn-xs" name="subjectNumber" th:value="${subject.id}" >next</button>
                   </h1>
                 </div>
               </form>
@@ -177,7 +177,7 @@ height: 400px;
                 <div th:each="sphere : ${spheres}">
                   <h2>
                   <span th:text="${sphere.name}"></span>
-                  <button type="submit" class="btn btn-primary btn-xs" name="sphereNumber" th:value="${sphere.number}" >next</button>
+                  <button type="submit" class="btn btn-primary btn-xs" name="sphereNumber" th:value="${sphere.id}" >next</button>
                   </h2>
                 </div>
               </form>

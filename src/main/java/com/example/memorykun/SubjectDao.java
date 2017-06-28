@@ -18,17 +18,21 @@ public class SubjectDao {
     }
 
     public Subject findSubjectByNumber(Integer subjectNumber){
-        return jdbc.queryForObject("SELECT * FROM subject WHERE number=?",
+        return jdbc.queryForObject("SELECT * FROM subject WHERE id=?",
                 new BeanPropertyRowMapper<>(Subject.class), subjectNumber);
     }
 
     public void updateSubject(String subjectName, int size){
-         jdbc.update("UPDATE subject set name=? where number=? And name IS NULL", subjectName,size);
+         jdbc.update("UPDATE subject set name=? where id=? And name IS NULL", subjectName,size);
     }
     public void deleteSubject(int subjectNumber){
-        jdbc.update("UPDATE subject set name=NULL where number=?", subjectNumber);
+        jdbc.update("UPDATE subject set name=NULL where id=?", subjectNumber);
     }
     
+
+    public void insertSubject(int id,String subjectName){
+         jdbc.update("INSERT INTO subject VALUES(?,?)", id,subjectName);
+    }
 }
 
 

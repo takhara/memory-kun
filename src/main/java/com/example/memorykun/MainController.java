@@ -30,23 +30,26 @@ public class MainController {
 
     @Autowired
     private WordDao wordDao;
-    
+
     @Autowired
     private CountIdDao countIdDao;
-    
+
+    @Autowired
+    private CountSubjectDao countSubjectDao;
+
+    @Autowired
+    private CountSphereDao countSphereDao;
 
     @PostMapping("/update/subject") /* HTML 14 (th:action="@{/form})、メソッド */
     public String updateSubject(UpdateSubjectForm form, RedirectAttributes attr) {
+        int count;
+        count = countSubjectDao.countSubjectId();
+        count++;
 
-        int size = 0;
-        for (int i = 1; i <= 5; i++) {
-            if (subjectDao.findSubjectByNumber(i).getName() == null) {
-                size = i;
-                break;
-            }
-        }
+        countSubjectDao.insertSubjectId(count);
 
-        subjectDao.updateSubject(form.getSubjectName(), size);
+        subjectDao.insertSubject(count, form.getSubjectName());
+
         List<Subject> subjects = subjectDao.findAll();
         attr.addFlashAttribute("subjects", subjects);
 
@@ -71,16 +74,13 @@ public class MainController {
     @PostMapping("/update/sphere") /* HTML 14 (th:action="@{/form})、メソッド */
     public String updateSphere(UpdateSphereForm form, RedirectAttributes attr) {
 
-        int size = 0;
-        for (int i = 1; i <= 10; i++) {
-            if (sphereDao.findCurrentSphereBySubjectNumberAndSphereNumber(form.getSubjectNumber(), i)
-                    .getName() == null) {
-                size = i;
-                break;
-            }
-        }
+        int count;
+        count = countSphereDao.countSphereId();
+        count++;
 
-        sphereDao.updateSphere(form.getSphereName(), size, form.getSubjectNumber());
+        countSphereDao.insertSphereId(count);
+
+        sphereDao.insertSphere(count, form.getSphereName(), form.getSubjectNumber());
 
         List<Sphere> spheres = sphereDao.findSphereBySubjectNumber(form.getSubjectNumber());
 
@@ -126,17 +126,16 @@ public class MainController {
     public String updateWord(UpdateWordForm form, RedirectAttributes attr) {
         int count;
 
-        if(countIdDao.countId() == 0){
-             count = 1;
-        }else{
-            count= countIdDao.countId();
+        if (countIdDao.countId() == 0) {
+            count = 1;
+        } else {
+            count = countIdDao.countId();
             count++;
         }
-        jdbc.update("INSERT INTO countId VALUES(?)",count);
+        countIdDao.insertWordId(count);
 
-        
         wordDao.insertWord(form.getWordName(), count, form.getSubjectNumber(), form.getSphereNumber());
-        count+=1;
+        count += 1;
 
         List<Word> words = wordDao.findWordBySubjectNumberAndSphereNumber(form.getSubjectNumber(),
                 form.getSphereNumber());
